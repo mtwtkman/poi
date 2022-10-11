@@ -9,4 +9,5 @@ jobs:
         with:
           nix_path: nixpkgs=channel:nixos-unstable
       - run: nix-shell
+      - run: cabal update
       - run: cabal test
