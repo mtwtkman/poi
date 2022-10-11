@@ -1,0 +1,43 @@
+cabal-version:      3.6
+name:               poi
+version:            0.1.0.0
+
+executable poi
+    hs-source-dirs:   app
+    main-is:          Main.hs
+    default-language: Haskell2010
+    build-depends:
+      base,
+      poi
+
+library
+    hs-source-dirs:   lib
+    default-language: Haskell2010
+    exposed-modules:
+      Poi
+      Poi.Time
+      Poi.Entity
+      Poi.Object
+      Poi.Type
+    build-depends:
+      base,
+      time,
+      directory,
+      filepath
+
+test-suite test
+    type:             exitcode-stdio-1.0
+    hs-source-dirs:   test
+    main-is:          test.hs
+    default-language: Haskell2010
+    other-modules:
+      Poi.Test.Arbitrary
+      Poi.Test.Time
+      Poi.Test.Entity.MetaInfo
+    build-depends:
+      base,
+      tasty,
+      tasty-smallcheck,
+      smallcheck,
+      time,
+      poi
