@@ -12,6 +12,7 @@ import Data.List
 import Data.Time.Clock
 import Data.Time.Clock.POSIX
 import Data.Time.LocalTime
+import Data.Time.Format.ISO8601
 import Poi.Time
 import Poi.Type
 import System.FilePath
@@ -29,7 +30,7 @@ absoluteObjectPath d p
 newtype TrashedAt = MkTrashedAt Timestamp deriving (Show, Eq)
 
 instance Serialize TrashedAt where
-  serialize (MkTrashedAt t) = show $ timestampToUTCTime t
+  serialize (MkTrashedAt t) = iso8601Show $ timestampToUTCTime t
 
 trashedAtToLocalTime :: TrashedAt -> IO LocalTime
 trashedAtToLocalTime (MkTrashedAt t) = do

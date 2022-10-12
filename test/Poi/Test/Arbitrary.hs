@@ -75,3 +75,6 @@ instance Monad m => Serial m ObjectPath where
 
 instance Monad m => Serial m TrashedAt where
   series = newtypeCons MkTrashedAt
+
+instance Monad m => Serial m MetaInfo where
+  series = cons2 MkMetaInfo

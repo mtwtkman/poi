@@ -10,6 +10,6 @@ tests :: TestTree
 tests =
   testGroup
     "Testing for Poi"
-    [ TimeTest.props,
-      MetaInfoTest.props
+    [ MetaInfoTest.props,
+      TimeTest.props
     ]

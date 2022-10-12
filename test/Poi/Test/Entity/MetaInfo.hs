@@ -1,16 +1,17 @@
-module Poi.Test.Entity.MetaInfo where
+module Poi.Test.Entity.MetaInfo (props) where
 
-import Poi.Test.Arbitrary
 import Poi.Entity
+import Poi.Test.Arbitrary
+import Poi.Type
 import Test.Tasty
 import Test.Tasty.SmallCheck as SC
 
 props :: TestTree
-props = testGroup "" [prop_Codec]
+props = testGroup "Testing MetaInfo" [prop_Serialize]
 
-prop_Codec =
+prop_Serialize =
   testGroup
-    "Codec"
-    [ SC.testProperty "reversible serialize" $
-        \x -> (x :: TrashedAt) == x
+    "Serialize"
+    [ SC.testProperty "makes formatted string" $
+        changeDepth (const 7) $ \m -> serialize (m :: MetaInfo) == ("path=" ++ serialize(getObjectPath m) ++ "\ntrashed-at=" ++ serialize(getTrashedAt m))
     ]

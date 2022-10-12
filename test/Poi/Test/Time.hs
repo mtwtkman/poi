@@ -1,4 +1,4 @@
-module Poi.Test.Time where
+module Poi.Test.Time (props) where
 
 import Data.Time.Clock
 import Poi.Test.Arbitrary
