@@ -7,7 +7,7 @@ import Poi.Object
 
 main :: IO ()
 main = do
-  let box = TrashBox "sandbox/Trash"
+  let box = MkTrashBox "sandbox/Trash"
   trashBoxCreated <- doesTrashBoxExist box
   unless trashBoxCreated $ createTrashBoxDirectory box
   path <- getLine
