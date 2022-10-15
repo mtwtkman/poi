@@ -4,11 +4,13 @@ module Poi.Type where
 class Serialize a where
   serialize :: a -> String
 
-data DeserializeError = DeserializeFailecd
+data DeserializeError = DeserializeFailed deriving (Show, Eq)
+
+type DeserializeResult a = Either DeserializeError a
 
 instance MonadFail (Either DeserializeError) where
-  fail s = Left DeserializeFailecd
+  fail s = Left DeserializeFailed
 
 class Deserialize a where
-  deserialize :: String -> Either DeserializeError a
+  deserialize :: String -> DeserializeResult a
 

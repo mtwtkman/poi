@@ -34,6 +34,7 @@ test-suite test
       Poi.Test.Arbitrary
       Poi.Test.Time
       Poi.Test.Entity.MetaInfo
+      Poi.Test.Entity.TrashedAt
     build-depends:
       base,
       tasty,

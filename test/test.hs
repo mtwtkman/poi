@@ -1,6 +1,7 @@
 module Main where
 
 import qualified Poi.Test.Entity.MetaInfo as MetaInfoTest
+import qualified Poi.Test.Entity.TrashedAt as TrashedAtTest
 import qualified Poi.Test.Time as TimeTest
 import Test.Tasty
 
@@ -11,5 +12,6 @@ tests =
   testGroup
     "Testing for Poi"
     [ MetaInfoTest.props,
-      TimeTest.props
+      TimeTest.props,
+      TrashedAtTest.props
     ]

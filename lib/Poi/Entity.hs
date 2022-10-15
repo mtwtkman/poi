@@ -51,4 +51,7 @@ data MetaInfo = MkMetaInfo
 instance Serialize MetaInfo where
   serialize a = intercalate "\n" $ map (\(k, v) -> k ++ "=" ++ v) [("path", serialize $ getObjectPath a), ("trashed-at", serialize $ getTrashedAt a)]
 
+instance Deserialize MetaInfo where
+  deserialize s = undefined
+
 newtype TrashBox = MkTrashBox FilePath deriving (Show)
