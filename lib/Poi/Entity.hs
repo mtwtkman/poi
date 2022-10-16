@@ -1,3 +1,5 @@
+{-# LANGUAGE QuasiQuotes #-}
+
 module Poi.Entity
   ( ObjectPath (..),
     absoluteObjectPath,
@@ -5,6 +7,7 @@ module Poi.Entity
     trashedAtToLocalTime,
     MetaInfo (..),
     TrashBox (..),
+    parseMetaInfoSource,
   )
 where
 
@@ -16,6 +19,7 @@ import Data.Time.LocalTime
 import Poi.Time
 import Poi.Type
 import System.FilePath
+import Text.RE.TDFA
 
 newtype ObjectPath = MkObjectPath FilePath deriving (Show, Eq)
 
@@ -52,6 +56,14 @@ instance Serialize MetaInfo where
   serialize a = intercalate "\n" $ map (\(k, v) -> k ++ "=" ++ v) [("path", serialize $ getObjectPath a), ("trashed-at", serialize $ getTrashedAt a)]
 
 instance Deserialize MetaInfo where
-  deserialize s = undefined
+  deserialize s = let parsed = head( parseMetaInfoSource s )
+                  in case parsed of
+                    [_, path, t] -> case parseDateTime8601 t of
+                      Just utc -> Right (MkMetaInfo (MkObjectPath path) (MkTrashedAt (utcTimeToTimestamp utc)) )
+                      Nothing -> Left DeserializeFailed
+                    _ -> Left DeserializeFailed
+
+parseMetaInfoSource :: String -> [[String]]
+parseMetaInfoSource s = s =~ [reMI|path=${path}(.+)\ntrashed-at=${at}(.+)|]
 
 newtype TrashBox = MkTrashBox FilePath deriving (Show)

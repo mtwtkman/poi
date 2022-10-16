@@ -23,6 +23,8 @@ prop_Deserialize =
   testGroup
     "Deserialize"
     [ testProperty "builds from string " $
-        \objectPathS utc -> let s = "path=" ++ (objectPathS :: String) ++ "\ntrashed-at=" ++ iso8601Show (utc :: UTCTime)
-                            in deserialize s == Right (MkMetaInfo (MkObjectPath objectPathS) (MkTrashedAt (utcTimeToTimestamp utc)))
+        \objectPath utc -> let s = "path=" ++ (objectPath :: String) ++ "\ntrashed-at=" ++ iso8601Show (utc :: UTCTime)
+                            in deserialize s == Right (MkMetaInfo (MkObjectPath objectPath) (MkTrashedAt (utcTimeToTimestamp utc)))
+    , testProperty "cannot build from malformed" $
+        \s -> (deserialize s :: DeserializeResult MetaInfo) == Left DeserializeFailed
     ]
