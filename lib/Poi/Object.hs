@@ -3,7 +3,6 @@ module Poi.Object where
 import Control.Monad
 import Data.List
 import Poi.Entity
-import Poi.Type
 import System.Directory
 import System.FilePath.Posix (isAbsolute, isRelative, (</>))
 

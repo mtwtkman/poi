@@ -2,7 +2,6 @@ module Poi.Test.Entity.MetaInfo (props) where
 
 import Poi.Entity
 import Poi.Test.Arbitrary
-import Poi.Type
 import Poi.Time
 import Data.Time.Clock
 import Data.Time.Format.ISO8601

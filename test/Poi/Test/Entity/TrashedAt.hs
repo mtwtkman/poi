@@ -1,7 +1,6 @@
 module Poi.Test.Entity.TrashedAt (props) where
 
 import Poi.Entity
-import Poi.Type
 import Test.Tasty
 import Test.Tasty.SmallCheck
 import Poi.Test.Arbitrary
