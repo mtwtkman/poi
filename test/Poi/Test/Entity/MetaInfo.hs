@@ -1,29 +1,27 @@
 module Poi.Test.Entity.MetaInfo (props) where
 
+import Data.Time.Clock
+import Data.Time.Format.ISO8601
 import Poi.Entity
 import Poi.Test.Arbitrary
 import Poi.Time
-import Data.Time.Clock
-import Data.Time.Format.ISO8601
+import Test.SmallCheck.Series
 import Test.Tasty
 import Test.Tasty.SmallCheck
 
 props :: TestTree
-props = testGroup "Testing MetaInfo" [prop_Serialize]
+props =
+  testGroup
+    "Testing MetaInfo"
+    [ prop_serde
+    ]
 
-prop_Serialize =
+prop_serde =
   testGroup
     "Serialize"
     [ testProperty "makes formatted string" $
-        changeDepth (const 7) $ \m -> serialize (m :: MetaInfo) == ("path=" ++ serialize(getObjectPath m) ++ "\ntrashed-at=" ++ serialize(getTrashedAt m))
-    ]
+        changeDepth (const 7) $ \m -> serialize (m :: MetaInfo) == ("path=" ++ serialize (getObjectPath m) ++ "\ntrashed-at=" ++ serialize (getTrashedAt m))
+    , testProperty "inversion" $
+        changeDepth (const 7) $ \m -> deserialize(serialize (m :: MetaInfo)) == Right m
 
-prop_Deserialize =
-  testGroup
-    "Deserialize"
-    [ testProperty "builds from string " $
-        \objectPath utc -> let s = "path=" ++ (objectPath :: String) ++ "\ntrashed-at=" ++ iso8601Show (utc :: UTCTime)
-                            in deserialize s == Right (MkMetaInfo (MkObjectPath objectPath) (MkTrashedAt (utcTimeToTimestamp utc)))
-    , testProperty "cannot build from malformed" $
-        \s -> (deserialize s :: DeserializeResult MetaInfo) == Left DeserializeFailed
     ]

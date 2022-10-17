@@ -71,7 +71,7 @@ instance Monad m => Serial m Timestamp where
   series = cons1 (MkTimestamp . nominalDiffTimeToSeconds . utcTimeToPOSIXSeconds)
 
 instance Monad m => Serial m ObjectPath where
-  series = newtypeCons MkObjectPath
+  series = cons1 (MkObjectPath . getNonEmpty)
 
 instance Monad m => Serial m TrashedAt where
   series = newtypeCons MkTrashedAt

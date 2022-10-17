@@ -28,7 +28,7 @@ class Deserialize a where
 newtype ObjectPath = MkObjectPath FilePath deriving (Show, Eq)
 
 instance Serialize ObjectPath where
-  serialize (MkObjectPath o) = show o
+  serialize (MkObjectPath o) = o
 
 absoluteObjectPath :: FilePath -> FilePath -> ObjectPath
 absoluteObjectPath d p
@@ -63,12 +63,12 @@ instance Deserialize MetaInfo where
   deserialize s =
     let parsed = head (parseMetaInfoSource s)
      in case parsed of
-          [_, path, t] -> case parseDateTime8601 t of
+          [_, path, t, _] -> case parseDateTime8601 t of
             Just utc -> Right (MkMetaInfo (MkObjectPath path) (MkTrashedAt (utcTimeToTimestamp utc)))
             Nothing -> Left DeserializeFailed
           _ -> Left DeserializeFailed
 
 parseMetaInfoSource :: String -> [[String]]
-parseMetaInfoSource s = s =~ [reMI|path=${path}(.+)\ntrashed-at=${at}(.+)|]
+parseMetaInfoSource s = s =~ [reMI|path=(.+)\ntrashed-at=([0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(\.[0-9]+)?Z).*|]
 
 newtype TrashBox = MkTrashBox FilePath deriving (Show)

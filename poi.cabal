@@ -8,7 +8,8 @@ executable poi
     default-language: Haskell2010
     build-depends:
       base,
-      poi
+      poi,
+      optparse-applicative
 
 library
     hs-source-dirs:   lib
