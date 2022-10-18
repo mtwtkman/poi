@@ -24,7 +24,8 @@ library
       time,
       directory,
       filepath,
-      regex
+      regex,
+      text
 
 test-suite test
     type:             exitcode-stdio-1.0

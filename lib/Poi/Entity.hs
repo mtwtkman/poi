@@ -4,13 +4,15 @@
 module Poi.Entity where
 
 import Data.List
+import Data.Text (pack)
 import Data.Time.Clock
 import Data.Time.Clock.POSIX
 import Data.Time.Format.ISO8601
 import Data.Time.LocalTime
 import Poi.Time
 import System.FilePath
-import Text.RE.TDFA
+import Text.RE.Replace
+import Text.RE.TDFA.String
 
 class Serialize a where
   serialize :: a -> String
@@ -61,14 +63,28 @@ instance Serialize MetaInfo where
 
 instance Deserialize MetaInfo where
   deserialize s =
-    let parsed = head (parseMetaInfoSource s)
-     in case parsed of
-          [_, path, t, _] -> case parseDateTime8601 t of
-            Just utc -> Right (MkMetaInfo (MkObjectPath path) (MkTrashedAt (utcTimeToTimestamp utc)))
-            Nothing -> Left DeserializeFailed
-          _ -> Left DeserializeFailed
+    let captured = parseMetaInfoSource s
+        p = capturedPath captured
+        t = capturedTrashedAt captured
+    in case (p, t) of
+      (Just p', Just t') -> case parseDateTime8601 t' of
+                              Just utc -> Right (MkMetaInfo (MkObjectPath p') (MkTrashedAt (utcTimeToTimestamp utc)))
+                              Nothing -> Left DeserializeFailed
+      _ -> Left DeserializeFailed
 
-parseMetaInfoSource :: String -> [[String]]
-parseMetaInfoSource s = s =~ [reMI|path=(.+)\ntrashed-at=([0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(\.[0-9]+)?Z).*|]
+capturePath :: CaptureID
+capturePath = IsCaptureName . CaptureName . pack $ "path"
+
+captureTrashedAt :: CaptureID
+captureTrashedAt = IsCaptureName . CaptureName . pack $ "trashedAt"
+
+data CapturedMetaInfo = MkCapturedMetaInfo
+  { capturedPath :: Maybe String,
+    capturedTrashedAt :: Maybe String
+  }
+
+parseMetaInfoSource :: String -> CapturedMetaInfo
+parseMetaInfoSource s = let matched = s ?=~ [reMI|path=${path}(.+)\ntrashed-at=${trashedAt}([0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(\.[0-9]+)?Z).*|]
+                        in MkCapturedMetaInfo (matched !$$? capturePath) (matched !$$? captureTrashedAt)
 
 newtype TrashBox = MkTrashBox FilePath deriving (Show)
