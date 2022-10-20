@@ -4,9 +4,6 @@ import Control.Monad
 import Data.List
 import Data.Semigroup ((<>))
 import Options.Applicative
-import Poi
-import Poi.Entity
-import Poi.Object
 
 type PutOptions = [FilePath]
 

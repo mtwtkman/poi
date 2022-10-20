@@ -15,10 +15,11 @@ library
     hs-source-dirs:   lib
     default-language: Haskell2010
     exposed-modules:
-      Poi
+      Poi.Operation.List
+      Poi.Operation.Put
+      Poi.Operation.Setup
       Poi.Time
       Poi.Entity
-      Poi.Object
     build-depends:
       base,
       time,

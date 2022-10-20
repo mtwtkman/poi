@@ -92,3 +92,5 @@ newtype TrashBox = MkTrashBox FilePath deriving (Show)
 metaInfoLocation :: TrashBox -> FilePath
 metaInfoLocation (MkTrashBox path) = path </> "poi.metainfo"
 
+storeDirPath :: TrashBox -> MetaInfo -> FilePath
+storeDirPath (MkTrashBox d) m = d </> serialize (getTrashedAt m)
