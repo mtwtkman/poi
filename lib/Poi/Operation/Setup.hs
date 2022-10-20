@@ -14,8 +14,14 @@ createMetaInfoFile tb metainfos = do
   let content = intercalate "\n" . map serialize $ metainfos
   writeFile (metaInfoLocation tb) content
 
-createTrashBoxDirectory :: TrashBox -> IO ()
+data SetupResult = CreatedTrahsBox | TrashBoxAlreadyExists deriving (Show, Eq)
+
+createTrashBoxDirectory :: TrashBox -> IO SetupResult
 createTrashBoxDirectory (MkTrashBox d) = do
   existed <- doesPathExist d
-  unless existed $ return ()
-  createDirectoryIfMissing True d
+  if existed
+    then return TrashBoxAlreadyExists
+    else do
+      createDirectoryIfMissing True d
+      return CreatedTrahsBox
+

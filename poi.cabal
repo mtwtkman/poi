@@ -9,8 +9,9 @@ executable poi
     build-depends:
       base,
       poi,
-      optparse-applicative
-
+      optparse-applicative,
+      directory,
+      filepath
 library
     hs-source-dirs:   lib
     default-language: Haskell2010
