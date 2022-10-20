@@ -19,6 +19,7 @@ library
       Poi.Operation.List
       Poi.Operation.Put
       Poi.Operation.Setup
+      Poi.Operation.UpdateMetaInfo
       Poi.Time
       Poi.Entity
     build-depends:
