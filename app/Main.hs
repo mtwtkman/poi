@@ -13,10 +13,11 @@ putCommand :: Parser Command
 putCommand = Put <$> many (argument str (metavar "FILEPATH"))
 
 poiCommand :: Parser Command
-poiCommand = subparser
-  ( command "list" (info (pure List) (progDesc "List trahsed objects"))
-  <> command "put" (info putCommand (progDesc "Move objects to trushbox safety"))
-  )
+poiCommand =
+  subparser
+    ( command "list" (info (pure List) (progDesc "List trahsed objects"))
+        <> command "put" (info putCommand (progDesc "Move objects to trushbox safety"))
+    )
 
 runPoiCommand :: Command -> IO ()
 runPoiCommand List = print "list command"

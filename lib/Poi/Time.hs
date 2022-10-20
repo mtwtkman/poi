@@ -4,7 +4,7 @@ module Poi.Time
     timestampToUTCTime,
     posixTimeToLocalTime,
     timestampToLocalTime,
-    Timestamp(..),
+    Timestamp (..),
     getCurrentTimestamp,
   )
 where

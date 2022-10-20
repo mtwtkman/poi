@@ -66,11 +66,11 @@ instance Deserialize MetaInfo where
     let captured = parseMetaInfoSource s
         p = capturedPath captured
         t = capturedTrashedAt captured
-    in case (p, t) of
-      (Just p', Just t') -> case parseDateTime8601 t' of
-                              Just utc -> Right (MkMetaInfo (MkObjectPath p') (MkTrashedAt (utcTimeToTimestamp utc)))
-                              Nothing -> Left DeserializeFailed
-      _ -> Left DeserializeFailed
+     in case (p, t) of
+          (Just p', Just t') -> case parseDateTime8601 t' of
+            Just utc -> Right (MkMetaInfo (MkObjectPath p') (MkTrashedAt (utcTimeToTimestamp utc)))
+            Nothing -> Left DeserializeFailed
+          _ -> Left DeserializeFailed
 
 capturePath :: CaptureID
 capturePath = IsCaptureName . CaptureName . pack $ "path"
@@ -84,8 +84,9 @@ data CapturedMetaInfo = MkCapturedMetaInfo
   }
 
 parseMetaInfoSource :: String -> CapturedMetaInfo
-parseMetaInfoSource s = let matched = s ?=~ [reMI|path=${path}(.+)\ntrashed-at=${trashedAt}([0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(\.[0-9]+)?Z).*|]
-                        in MkCapturedMetaInfo (matched !$$? capturePath) (matched !$$? captureTrashedAt)
+parseMetaInfoSource s =
+  let matched = s ?=~ [reMI|path=${path}(.+)\ntrashed-at=${trashedAt}([0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(\.[0-9]+)?Z).*|]
+   in MkCapturedMetaInfo (matched !$$? capturePath) (matched !$$? captureTrashedAt)
 
 newtype TrashBox = MkTrashBox FilePath deriving (Show)
 
