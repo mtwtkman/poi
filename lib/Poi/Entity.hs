@@ -88,3 +88,7 @@ parseMetaInfoSource s = let matched = s ?=~ [reMI|path=${path}(.+)\ntrashed-at=$
                         in MkCapturedMetaInfo (matched !$$? capturePath) (matched !$$? captureTrashedAt)
 
 newtype TrashBox = MkTrashBox FilePath deriving (Show)
+
+metaInfoLocation :: TrashBox -> FilePath
+metaInfoLocation (MkTrashBox path) = path </> "poi.metainfo"
+
