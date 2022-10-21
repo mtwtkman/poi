@@ -12,7 +12,7 @@ doesTrashBoxExist (MkTrashBox d) = doesPathExist d
 createMetaInfoFile :: TrashBox -> [MetaInfo] -> IO ()
 createMetaInfoFile tb metainfos = do
   let content = intercalate "\n" . map serialize $ metainfos
-  writeFile (metaInfoLocation tb) content
+  writeFile (metaInfoFileLocation tb) content
 
 data SetupResult = CreatedTrahsBox | TrashBoxAlreadyExists deriving (Show, Eq)
 
