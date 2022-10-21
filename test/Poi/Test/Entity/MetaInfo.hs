@@ -20,7 +20,7 @@ prop_serde =
   testGroup
     "Serialize"
     [ testProperty "makes formatted string" $
-        changeDepth (const 7) $ \m -> serialize (m :: MetaInfo) == ("path=" ++ serialize (getObjectPath m) ++ "\ntrashed-at=" ++ serialize (getTrashedAt m)),
+        changeDepth (const 7) $ \m -> serialize (m :: MetaInfo) == ("path=" ++ serialize (getObjectPath m) ++ ",trashed-at=" ++ serialize (getTrashedAt m)),
       testProperty "inversion" $
         changeDepth (const 7) $ \m -> deserialize (serialize (m :: MetaInfo)) == Right m
     ]

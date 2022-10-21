@@ -42,6 +42,11 @@ newtype TrashedAt = MkTrashedAt Timestamp deriving (Show, Eq)
 instance Serialize TrashedAt where
   serialize (MkTrashedAt t) = iso8601Show $ timestampToUTCTime t
 
+trashedAtNow :: IO TrashedAt
+trashedAtNow = do
+  t <- getCurrentTime
+  return . MkTrashedAt $ utcTimeToTimestamp t
+
 instance Deserialize TrashedAt where
   deserialize s = do
     value <- iso8601ParseM s
@@ -59,7 +64,7 @@ data MetaInfo = MkMetaInfo
   deriving (Show, Eq)
 
 instance Serialize MetaInfo where
-  serialize a = intercalate "\n" $ map (\(k, v) -> k ++ "=" ++ v) [("path", serialize $ getObjectPath a), ("trashed-at", serialize $ getTrashedAt a)]
+  serialize a = intercalate "," $ map (\(k, v) -> k ++ "=" ++ v) [("path", serialize $ getObjectPath a), ("trashed-at", serialize $ getTrashedAt a)]
 
 instance Deserialize MetaInfo where
   deserialize s =
@@ -85,13 +90,13 @@ data CapturedMetaInfo = MkCapturedMetaInfo
 
 parseMetaInfoSource :: String -> CapturedMetaInfo
 parseMetaInfoSource s =
-  let matched = s ?=~ [reMI|path=${path}(.+)\ntrashed-at=${trashedAt}([0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(\.[0-9]+)?Z).*|]
+  let matched = s ?=~ [reMI|path=${path}(.+),trashed-at=${trashedAt}([0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(\.[0-9]+)?Z).*|]
    in MkCapturedMetaInfo (matched !$$? capturePath) (matched !$$? captureTrashedAt)
 
 newtype TrashBox = MkTrashBox FilePath deriving (Show)
 
 metaInfoFileLocation :: TrashBox -> FilePath
-metaInfoFileLocation (MkTrashBox path) = path </> "poi.metainfo"
+metaInfoFileLocation (MkTrashBox path) = path </> "metainfo"
 
 storeDirPath :: TrashBox -> MetaInfo -> FilePath
 storeDirPath (MkTrashBox d) m = d </> serialize (getTrashedAt m)
