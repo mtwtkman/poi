@@ -1,5 +1,5 @@
-{-# LANGUAGE FlexibleInstances #-}
-{-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE GeneralizedNewtypeDeriving #-}
+{-# LANGUAGE StandaloneDeriving #-}
 
 module Poi.Test.Arbitrary where
 
@@ -8,73 +8,53 @@ import Data.Fixed
 import Data.Ratio
 import Data.Time.Calendar
 import Data.Time.Clock
-import Data.Time.Clock.POSIX
-import GHC.Generics
 import Poi.Entity
 import Poi.Time
-import Test.SmallCheck.Series
+import System.Random
+import Test.QuickCheck
 
-newtype BoundedIntSec = BoundedIntSec Integer deriving (Eq, Ord, Show)
-
-instance Bounded BoundedIntSec where
-  minBound = BoundedIntSec 0
-  maxBound = BoundedIntSec 86400
-
-instance Num BoundedIntSec where
-  (BoundedIntSec a) + (BoundedIntSec b) = BoundedIntSec (a + b)
-  (BoundedIntSec a) - (BoundedIntSec b) = BoundedIntSec (a - b)
-  (BoundedIntSec a) * (BoundedIntSec b) = BoundedIntSec (a * b)
-  abs (BoundedIntSec a) = BoundedIntSec (abs a)
-  signum (BoundedIntSec a) = BoundedIntSec (signum a)
-  fromInteger = BoundedIntSec
-
-instance Monad m => Serial m BoundedIntSec where
-  series = cons1 BoundedIntSec
-
-newtype BoundedFracSec = BoundedFracSec Integer deriving (Eq, Ord, Show)
-
-instance Bounded BoundedFracSec where
-  minBound = BoundedFracSec 0
-  maxBound = BoundedFracSec (86400 * 10 ^ 12)
-
-instance Num BoundedFracSec where
-  (BoundedFracSec a) + (BoundedFracSec b) = BoundedFracSec (a + b)
-  (BoundedFracSec a) - (BoundedFracSec b) = BoundedFracSec (a - b)
-  (BoundedFracSec a) * (BoundedFracSec b) = BoundedFracSec (a * b)
-  abs (BoundedFracSec a) = BoundedFracSec (abs a)
-  signum (BoundedFracSec a) = BoundedFracSec (signum a)
-  fromInteger = BoundedFracSec
-
-instance Monad m => Serial m BoundedFracSec where
-  series = cons1 BoundedFracSec
-
-data Sec = IntSec (Positive BoundedIntSec) | FracSec (Positive BoundedFracSec)
-  deriving (Eq, Show)
-
-instance Monad m => Serial m Sec where
-  series = cons1 IntSec \/ cons1 FracSec
-
-instance Monad m => Serial m DiffTime where
-  series = cons1 makeDifftime
+instance Arbitrary DiffTime where
+  arbitrary = oneof [intSecs, fracSecs]
     where
-      makeDifftime :: Sec -> DiffTime
-      makeDifftime (IntSec (Positive (BoundedIntSec x))) = fromInteger x
-      makeDifftime (FracSec (Positive (BoundedFracSec x))) = fromRational (x % 10 ^ 12)
+      intSecs = secondsToDiffTime' <$> choose (0, 86400)
+      fracSecs = picosecondsToDiffTime' <$> choose (0, 86400 * 10 ^ (12 :: Int))
+      secondsToDiffTime' :: Integer -> DiffTime
+      secondsToDiffTime' = fromInteger
+      picosecondsToDiffTime' :: Integer -> DiffTime
+      picosecondsToDiffTime' x = fromRational (x % 10 ^ (12 :: Int))
 
-instance Monad m => Serial m Day where
-  series = cons1 (ModifiedJulianDay . getNonNegative)
+supportedDayRange :: (Day, Day)
+supportedDayRange = (fromGregorian (-9899) 1 1, fromGregorian 9999 12 31)
 
-instance Monad m => Serial m UTCTime where
-  series = cons2 UTCTime
+deriving instance Random Day
 
-instance Monad m => Serial m Timestamp where
-  series = cons1 (MkTimestamp . nominalDiffTimeToSeconds . utcTimeToPOSIXSeconds)
+instance Arbitrary Day where
+  arbitrary = choose supportedDayRange
+  shrink day =
+    let (y, m, d) = toGregorian day
+        dayShrink = [fromGregorian y m (d - 1) | d > 1]
+        monthShrink = [fromGregorian y (m - 1) d | m > 1]
+        yearShrink
+          | y > 2000 = [fromGregorian (y - 1) m d]
+          | y < 2000 = [fromGregorian (y + 1) m d]
+          | otherwise = []
+     in dayShrink ++ monthShrink ++ yearShrink
 
-instance Monad m => Serial m ObjectPath where
-  series = cons1 (MkObjectPath . getNonEmpty)
+instance Arbitrary UTCTime where
+  arbitrary = UTCTime <$> arbitrary <*> arbitrary
 
-instance Monad m => Serial m TrashedAt where
-  series = newtypeCons MkTrashedAt
+instance Arbitrary ObjectPath where
+  arbitrary = do
+    (NonEmpty value) <- arbitrary
+    return (MkObjectPath value)
 
-instance Monad m => Serial m MetaInfo where
-  series = cons2 MkMetaInfo
+instance Arbitrary Timestamp where
+  arbitrary = do
+    (Positive value) <- arbitrary :: Gen (Positive Pico)
+    return (MkTimestamp value)
+
+instance Arbitrary TrashedAt where
+  arbitrary = MkTrashedAt <$> arbitrary
+
+instance Arbitrary MetaInfo where
+  arbitrary = MkMetaInfo <$> arbitrary <*> arbitrary

@@ -4,7 +4,7 @@ import Data.Time.Clock
 import Poi.Test.Arbitrary
 import Poi.Time
 import Test.Tasty
-import qualified Test.Tasty.SmallCheck as SC
+import Test.Tasty.QuickCheck
 
 props :: TestTree
 props = testGroup "Testing Poi.Time" [prop_Conversions]
@@ -12,6 +12,6 @@ props = testGroup "Testing Poi.Time" [prop_Conversions]
 prop_Conversions =
   testGroup
     "Conversions"
-    [ SC.testProperty "can converts utc time to picoseconds also opposite" $
+    [ testProperty "can converts utc time to picoseconds also opposite" $
         \t -> timestampToUTCTime (utcTimeToTimestamp (t :: UTCTime)) == t
     ]

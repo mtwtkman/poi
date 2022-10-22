@@ -86,11 +86,11 @@ captureTrashedAt = IsCaptureName . CaptureName . pack $ "trashedAt"
 data CapturedMetaInfo = MkCapturedMetaInfo
   { capturedPath :: Maybe String,
     capturedTrashedAt :: Maybe String
-  }
+  } deriving (Show, Eq)
 
 parseMetaInfoSource :: String -> CapturedMetaInfo
 parseMetaInfoSource s =
-  let matched = s ?=~ [reMI|path=${path}(.+),trashed-at=${trashedAt}([0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(\.[0-9]+)?Z).*|]
+  let matched = s ?=~ [reBI|path=${path}(.+),trashed-at=${trashedAt}([0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(\.[0-9]+)?Z).*|]
    in MkCapturedMetaInfo (matched !$$? capturePath) (matched !$$? captureTrashedAt)
 
 newtype TrashBox = MkTrashBox FilePath deriving (Show)

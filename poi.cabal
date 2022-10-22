@@ -44,9 +44,7 @@ test-suite test
     build-depends:
       base,
       tasty,
-      tasty-smallcheck,
       tasty-quickcheck,
-      smallcheck,
       QuickCheck,
       time,
       poi,
