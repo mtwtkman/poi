@@ -86,7 +86,8 @@ captureTrashedAt = IsCaptureName . CaptureName . pack $ "trashedAt"
 data CapturedMetaInfo = MkCapturedMetaInfo
   { capturedPath :: Maybe String,
     capturedTrashedAt :: Maybe String
-  } deriving (Show, Eq)
+  }
+  deriving (Show, Eq)
 
 parseMetaInfoSource :: String -> CapturedMetaInfo
 parseMetaInfoSource s =

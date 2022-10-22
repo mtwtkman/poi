@@ -1,12 +1,12 @@
 module Poi.Test.Operation.UpdateMetaInfo (props) where
 
-import System.Random
 import Poi.Entity
 import Poi.Operation.UpdateMetaInfo
 import Poi.Test.Arbitrary
+import System.Random
+import Test.QuickCheck
 import Test.Tasty
 import Test.Tasty.QuickCheck
-import Test.QuickCheck
 
 props :: TestTree
 props = testGroup "Testing Poi.Operation.UpdateMetaInfo" [prop_addMetaInfo, prop_findMetaInfo]
@@ -22,7 +22,7 @@ pickMetaInfo :: RandomGen g => g -> [MetaInfo] -> (MetaInfo, g)
 pickMetaInfo rnd xs =
   let len = length xs - 1
       (i, g) = randomR (0, len) rnd
-  in (xs !! i, g)
+   in (xs !! i, g)
 
 prop_findMetaInfo =
   testGroup

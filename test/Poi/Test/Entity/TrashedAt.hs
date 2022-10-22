@@ -12,7 +12,7 @@ prop_Deserialize =
   testGroup
     "Deserialize"
     [ testProperty "builds from string" $
-         \t -> deserialize (serialize (t :: TrashedAt)) == Right t,
+        \t -> deserialize (serialize (t :: TrashedAt)) == Right t,
       testProperty "cannot build against malformed string" $
         \s -> (deserialize ("NOT ISO8601 FORMAT! " ++ s :: String) :: DeserializeResult TrashedAt) == Left DeserializeFailed
     ]
