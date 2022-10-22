@@ -23,12 +23,23 @@ getCurrentWholeMetaInfo trashbox = do
         Left DeserializeFailed -> return (Left FileNotFound)
     else return (Left FileNotFound)
 
+addMetaInfo :: [MetaInfo] -> MetaInfo -> [MetaInfo]
+addMetaInfo metas = (<>) metas . pure
+
 updateMetaInfoFile :: TrashBox -> MetaInfo -> IO (MetaInfoFileAccessResult [MetaInfo])
 updateMetaInfoFile tb m = do
   contents <- getCurrentWholeMetaInfo tb
   case contents of
     Right metas -> do
-      let updated = metas ++ [m]
+      let updated = addMetaInfo metas m
       writeFile (metaInfoFileLocation tb) (unlines $ map serialize updated)
       return (Right updated)
     Left _ -> return (Left FileNotFound)
+
+findMetaInfo :: [MetaInfo] -> MetaInfo -> Maybe MetaInfo
+findMetaInfo (x : xs) m = if x == m then Just x else findMetaInfo xs m
+findMetaInfo [] m = Nothing
+
+deleteMetaInfoFile :: TrashBox -> MetaInfo -> IO (MetaInfoFileAccessResult [MetaInfo])
+deleteMetaInfoFile tb m = do
+  undefined

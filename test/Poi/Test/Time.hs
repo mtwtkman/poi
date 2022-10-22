@@ -4,7 +4,7 @@ import Data.Time.Clock
 import Poi.Test.Arbitrary
 import Poi.Time
 import Test.Tasty
-import Test.Tasty.SmallCheck as SC
+import qualified Test.Tasty.SmallCheck as SC
 
 props :: TestTree
 props = testGroup "Testing Poi.Time" [prop_Conversions]

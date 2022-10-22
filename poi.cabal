@@ -40,10 +40,14 @@ test-suite test
       Poi.Test.Time
       Poi.Test.Entity.MetaInfo
       Poi.Test.Entity.TrashedAt
+      Poi.Test.Operation.UpdateMetaInfo
     build-depends:
       base,
       tasty,
       tasty-smallcheck,
+      tasty-quickcheck,
       smallcheck,
+      QuickCheck,
       time,
-      poi
+      poi,
+      random

@@ -24,4 +24,3 @@ createTrashBoxDirectory (MkTrashBox d) = do
     else do
       createDirectoryIfMissing True d
       return CreatedTrahsBox
-
