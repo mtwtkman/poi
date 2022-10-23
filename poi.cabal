@@ -17,7 +17,7 @@ library
     default-language: Haskell2010
     exposed-modules:
       Poi.Operation.List
-      Poi.Operation.Put
+      Poi.Operation.Move
       Poi.Operation.Setup
       Poi.Operation.UpdateMetaInfo
       Poi.Operation

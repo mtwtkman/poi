@@ -15,6 +15,7 @@ import Poi.Time
 import System.FilePath
 import Text.RE.Replace
 import Text.RE.TDFA.String
+import System.Directory
 
 class Serialize a where
   serialize :: a -> String
@@ -34,10 +35,12 @@ newtype ObjectPath = MkObjectPath FilePath deriving (Show, Eq)
 instance Serialize ObjectPath where
   serialize (MkObjectPath o) = o
 
-absoluteObjectPath :: FilePath -> FilePath -> ObjectPath
-absoluteObjectPath d p
-  | isAbsolute p = MkObjectPath p
-  | otherwise = MkObjectPath (d </> p)
+absolutePath :: FilePath -> IO FilePath
+absolutePath p
+  | isAbsolute p = return p
+  | otherwise = do
+    d <- getCurrentDirectory
+    return $ d </> p
 
 newtype TrashedAt = MkTrashedAt Timestamp deriving (Show, Eq)
 
@@ -109,3 +112,9 @@ newtype TrashBox = MkTrashBox FilePath deriving (Show)
 
 metaInfoFileLocation :: TrashBox -> FilePath
 metaInfoFileLocation (MkTrashBox path) = path </> "metainfo"
+
+metaInfoFromFilePath :: FilePath -> IO MetaInfo
+metaInfoFromFilePath p = do
+  uuid <- nextRandom
+  t <- getCurrentTimestamp
+  return $ MkMetaInfo (MkObjectPath p) (MkTrashedAt t) uuid
