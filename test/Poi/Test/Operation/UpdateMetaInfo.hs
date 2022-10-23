@@ -16,7 +16,7 @@ prop_addMetaInfo =
   testGroup
     "addMetaInfo"
     [ testProperty "added metainfo to last" $
-        \ms m -> last (addMetaInfo (ms :: [MetaInfo]) (m :: MetaInfo)) == m
+        \ms m -> (last <$> addMetaInfo (ms :: [MetaInfo]) (m :: MetaInfo)) == Right m
     ]
 
 pickMetaInfo :: RandomGen g => g -> [MetaInfo] -> (MetaInfo, g)

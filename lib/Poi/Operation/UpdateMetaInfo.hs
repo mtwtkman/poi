@@ -37,31 +37,26 @@ currentWholeMetaInfoContext tb m process = do
     Left _ -> return (Left FileNotFound)
 
 
-addMetaInfo :: [MetaInfo] -> MetaInfo -> [MetaInfo]
-addMetaInfo metas = (<>) metas . pure
+addMetaInfo :: [MetaInfo] -> MetaInfo -> MetaInfoUpdateResult [MetaInfo]
+addMetaInfo metas =  Right . (<>) metas . pure
 
 writeMetaInfoFile :: TrashBox -> [MetaInfo] -> IO ()
 writeMetaInfoFile tb metas = writeFile (metaInfoFileLocation tb) (unlines $ map serialize metas)
 
-updateMetaInfoFile :: TrashBox -> MetaInfo -> ([MetaInfo] -> MetaInfo -> MetaInfoUpdateResult a) -> IO (MetaInfoFileAccessResult a)
+updateMetaInfoFile :: TrashBox -> MetaInfo -> ([MetaInfo] -> MetaInfo -> MetaInfoUpdateResult [MetaInfo]) -> IO (MetaInfoFileAccessResult [MetaInfo])
 updateMetaInfoFile tb m process = do
   contents <- getCurrentWholeMetaInfo tb
   case contents of
     Right metas -> do
       case process metas m of
-        Right result ->  return $ Right result
+        Right newValues ->  do
+          writeMetaInfoFile tb newValues
+          return $ Right newValues
         Left reason -> return $ Left (MetaInfoFileUpdateError reason)
     Left _ -> return $ Left FileNotFound
 
 addMetaInfoToFile :: TrashBox -> MetaInfo -> IO (MetaInfoFileAccessResult [MetaInfo])
-addMetaInfoToFile tb m = do
-  contents <- getCurrentWholeMetaInfo tb
-  case contents of
-    Right metas -> do
-      let updated = addMetaInfo metas m
-      writeMetaInfoFile tb updated
-      return (Right updated)
-    Left _ -> return (Left FileNotFound)
+addMetaInfoToFile tb m = updateMetaInfoFile tb m addMetaInfo
 
 findMetaInfo :: [MetaInfo] -> MetaInfo -> Maybe MetaInfo
 findMetaInfo (x : xs) m = if x == m then Just x else findMetaInfo xs m
@@ -75,13 +70,4 @@ deleteMetaInfo [] _ = Left NoMetaInfo
 deleteMetaInfo xs m = if isKnownMetaInfo xs m then Right [x | x <- xs, x /= m] else Left UnknownMetaInfo
 
 deleteMetaInfoFile :: TrashBox -> MetaInfo -> IO (MetaInfoFileAccessResult [MetaInfo])
-deleteMetaInfoFile tb m = do
-  content <- getCurrentWholeMetaInfo tb
-  case content of
-    Right metas -> do
-      case deleteMetaInfo metas m of
-        Right deleted -> do
-          writeMetaInfoFile tb deleted
-          return $ Right deleted
-        Left reason -> return $ Left (MetaInfoFileUpdateError reason)
-    Left _ -> return (Left FileNotFound)
+deleteMetaInfoFile tb m = updateMetaInfoFile tb m deleteMetaInfo
