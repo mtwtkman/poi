@@ -1,8 +1,8 @@
-module Poi.Test.Operation.UpdateMetaInfo (props) where
+module Poi.Test.Action.UpdateMetaInfo (props) where
 
 import Data.Maybe
 import Poi.Entity
-import Poi.Operation.UpdateMetaInfo
+import Poi.Action.UpdateMetaInfo
 import Poi.Test.Arbitrary
 import System.Random
 import Test.QuickCheck
@@ -10,7 +10,7 @@ import Test.Tasty
 import Test.Tasty.QuickCheck
 
 props :: TestTree
-props = testGroup "Testing Poi.Operation.UpdateMetaInfo" [prop_addMetaInfo, prop_findMetaInfo, prop_deleteMetaInfo]
+props = testGroup "Testing Poi.Action.UpdateMetaInfo" [prop_addMetaInfo, prop_findMetaInfo, prop_deleteMetaInfo]
 
 prop_addMetaInfo =
   testGroup

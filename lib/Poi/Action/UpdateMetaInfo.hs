@@ -1,4 +1,4 @@
-module Poi.Operation.UpdateMetaInfo where
+module Poi.Action.UpdateMetaInfo where
 
 import Control.Monad
 import Data.Maybe

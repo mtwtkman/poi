@@ -1,10 +1,10 @@
-module Poi.Operation.Move where
+module Poi.Action.Move where
 
 import Poi.Entity
 import System.Directory
 import System.FilePath
-import Poi.Operation.UpdateMetaInfo
-import Poi.Operation
+import Poi.Action.UpdateMetaInfo
+import Poi.Action
 import Data.UUID
 
 absoluteObjectPath :: FilePath -> IO ObjectPath
@@ -13,7 +13,7 @@ absoluteObjectPath p = MkObjectPath <$> absolutePath p
 buildDest :: TrashBox -> MetaInfo -> FilePath
 buildDest (MkTrashBox box) m = box </> serialize (unObjectPath m)
 
-moveToTrashBox :: TrashBox -> FilePath -> IO (PoiOperationResult ())
+moveToTrashBox :: TrashBox -> FilePath -> IO (PoiActionResult ())
 moveToTrashBox tb src = do
   absolutePath <- absoluteObjectPath src
   metainfo <- metaInfoFromFilePath src
@@ -23,7 +23,7 @@ moveToTrashBox tb src = do
     Right _ -> return $ Right ()
     Left _ -> return $ Left PoiMoveError
 
-rollback :: TrashBox -> MetaInfo -> IO (PoiOperationResult ())
+rollback :: TrashBox -> MetaInfo -> IO (PoiActionResult ())
 rollback tb m = do
   let p = unObjectPath m
       uuid = unId m

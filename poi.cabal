@@ -16,11 +16,11 @@ library
     hs-source-dirs:   lib
     default-language: Haskell2010
     exposed-modules:
-      Poi.Operation.List
-      Poi.Operation.Move
-      Poi.Operation.Setup
-      Poi.Operation.UpdateMetaInfo
-      Poi.Operation
+      Poi.Action.List
+      Poi.Action.Move
+      Poi.Action.Setup
+      Poi.Action.UpdateMetaInfo
+      Poi.Action
       Poi.Time
       Poi.Entity
     build-depends:
@@ -42,7 +42,7 @@ test-suite test
       Poi.Test.Time
       Poi.Test.Entity.MetaInfo
       Poi.Test.Entity.TrashedAt
-      Poi.Test.Operation.UpdateMetaInfo
+      Poi.Test.Action.UpdateMetaInfo
     build-depends:
       base,
       tasty,

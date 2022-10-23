@@ -4,8 +4,8 @@ import Control.Monad
 import Data.List
 import Data.Semigroup ((<>))
 import Options.Applicative
+import qualified Poi.Action.Setup as SetupOp
 import Poi.Entity
-import qualified Poi.Operation.Setup as SetupOp
 import System.Directory
 import System.FilePath.Posix
 

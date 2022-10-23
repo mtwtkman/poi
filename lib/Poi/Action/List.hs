@@ -1,4 +1,4 @@
-module Poi.Operation.List where
+module Poi.Action.List where
 
 import Poi.Entity
 

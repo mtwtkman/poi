@@ -1,4 +1,4 @@
-module Poi.Operation.Setup where
+module Poi.Action.Setup where
 
 import Control.Monad
 import Data.List
