@@ -3,6 +3,7 @@
 
 module Poi.Test.Arbitrary where
 
+import Data.UUID
 import Control.Monad
 import Data.Fixed
 import Data.Ratio
@@ -56,5 +57,15 @@ instance Arbitrary Timestamp where
 instance Arbitrary TrashedAt where
   arbitrary = MkTrashedAt <$> arbitrary
 
+instance Arbitrary UUID where
+  arbitrary = choose (nil, nil)
+
 instance Arbitrary MetaInfo where
-  arbitrary = MkMetaInfo <$> arbitrary <*> arbitrary
+  arbitrary = MkMetaInfo <$> arbitrary <*> arbitrary <*> arbitrary
+
+pickMetaInfo :: RandomGen g => g -> [MetaInfo] -> (MetaInfo, g)
+pickMetaInfo rnd xs =
+  let len = length xs - 1
+      (i, g) = randomR (0, len) rnd
+   in (xs !! i, g)
+

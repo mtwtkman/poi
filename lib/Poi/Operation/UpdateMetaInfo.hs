@@ -28,17 +28,8 @@ getCurrentWholeMetaInfo trashbox = do
         Left DeserializeFailed -> return (Left FileNotFound)
     else return (Left FileNotFound)
 
-currentWholeMetaInfoContext :: TrashBox -> MetaInfo -> ([MetaInfo] -> MetaInfo -> a) -> IO (MetaInfoFileAccessResult a)
-currentWholeMetaInfoContext tb m process = do
-  contents <- getCurrentWholeMetaInfo tb
-  case contents of
-    Right metas -> do
-      return $ Right (process metas m)
-    Left _ -> return (Left FileNotFound)
-
-
 addMetaInfo :: [MetaInfo] -> MetaInfo -> MetaInfoUpdateResult [MetaInfo]
-addMetaInfo metas =  Right . (<>) metas . pure
+addMetaInfo metas = Right . (<>) metas . pure
 
 writeMetaInfoFile :: TrashBox -> [MetaInfo] -> IO ()
 writeMetaInfoFile tb metas = writeFile (metaInfoFileLocation tb) (unlines $ map serialize metas)
@@ -49,7 +40,7 @@ updateMetaInfoFile tb m process = do
   case contents of
     Right metas -> do
       case process metas m of
-        Right newValues ->  do
+        Right newValues -> do
           writeMetaInfoFile tb newValues
           return $ Right newValues
         Left reason -> return $ Left (MetaInfoFileUpdateError reason)
@@ -69,5 +60,5 @@ deleteMetaInfo :: [MetaInfo] -> MetaInfo -> MetaInfoUpdateResult [MetaInfo]
 deleteMetaInfo [] _ = Left NoMetaInfo
 deleteMetaInfo xs m = if isKnownMetaInfo xs m then Right [x | x <- xs, x /= m] else Left UnknownMetaInfo
 
-deleteMetaInfoFile :: TrashBox -> MetaInfo -> IO (MetaInfoFileAccessResult [MetaInfo])
-deleteMetaInfoFile tb m = updateMetaInfoFile tb m deleteMetaInfo
+deleteMetaInfoFromFile :: TrashBox -> MetaInfo -> IO (MetaInfoFileAccessResult [MetaInfo])
+deleteMetaInfoFromFile tb m = updateMetaInfoFile tb m deleteMetaInfo

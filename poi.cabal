@@ -20,6 +20,7 @@ library
       Poi.Operation.Put
       Poi.Operation.Setup
       Poi.Operation.UpdateMetaInfo
+      Poi.Operation
       Poi.Time
       Poi.Entity
     build-depends:
@@ -28,7 +29,8 @@ library
       directory,
       filepath,
       regex,
-      text
+      text,
+      uuid
 
 test-suite test
     type:             exitcode-stdio-1.0
@@ -48,4 +50,5 @@ test-suite test
       QuickCheck,
       time,
       poi,
-      random
+      random,
+      uuid

@@ -19,12 +19,6 @@ prop_addMetaInfo =
         \ms m -> (last <$> addMetaInfo (ms :: [MetaInfo]) (m :: MetaInfo)) == Right m
     ]
 
-pickMetaInfo :: RandomGen g => g -> [MetaInfo] -> (MetaInfo, g)
-pickMetaInfo rnd xs =
-  let len = length xs - 1
-      (i, g) = randomR (0, len) rnd
-   in (xs !! i, g)
-
 prop_findMetaInfo =
   testGroup
     "findMetaInfo"
