@@ -11,7 +11,12 @@ import System.FilePath.Posix
 
 type PutOptions = [FilePath]
 
-data Command = List | Put PutOptions | Setup deriving (Show, Eq)
+data Command
+  = List
+  | Put PutOptions
+  | Setup
+  | Back
+  deriving (Show, Eq)
 
 putCommand :: Parser Command
 putCommand = Put <$> many (argument str (metavar "FILEPATH"))
@@ -22,6 +27,7 @@ poiCommand =
     ( command "list" (info (pure List) (progDesc "List trahsed objects"))
         <> command "put" (info putCommand (progDesc "Move objects to trushbox safety"))
         <> command "setup" (info (pure Setup) (progDesc "Setup trashbox"))
+        <> command "back" (info (pure Back) (progDesc "Put back a trashed object to its original location"))
     )
 
 runPoiCommand :: Command -> IO ()
@@ -34,6 +40,8 @@ runPoiCommand Setup = do
   case result of
     SetupOp.CreatedTrahsBox -> print $ "created " ++ trashboxDir
     SetupOp.TrashBoxAlreadyExists -> print $ trashboxDir ++ " exists, so do nothing"
+runPoiCommand Back = do
+  print "back"
 
 main :: IO ()
 main = runPoiCommand =<< execParser (info poiCommand idm)

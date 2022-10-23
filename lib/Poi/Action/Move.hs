@@ -13,8 +13,8 @@ absoluteObjectPath p = MkObjectPath <$> absolutePath p
 buildDest :: TrashBox -> MetaInfo -> FilePath
 buildDest (MkTrashBox box) m = box </> serialize (unObjectPath m)
 
-moveToTrashBox :: TrashBox -> FilePath -> IO (PoiActionResult ())
-moveToTrashBox tb src = do
+trash :: TrashBox -> FilePath -> IO (PoiActionResult ())
+trash tb src = do
   absolutePath <- absoluteObjectPath src
   metainfo <- metaInfoFromFilePath src
   renameDirectory src $ buildDest tb metainfo
@@ -23,8 +23,8 @@ moveToTrashBox tb src = do
     Right _ -> return $ Right ()
     Left _ -> return $ Left PoiMoveError
 
-rollback :: TrashBox -> MetaInfo -> IO (PoiActionResult ())
-rollback tb m = do
+back :: TrashBox -> MetaInfo -> IO (PoiActionResult ())
+back tb m = do
   let p = unObjectPath m
       uuid = unId m
   renameDirectory (toString uuid) (serialize p)
