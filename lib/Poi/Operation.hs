@@ -1,5 +1,9 @@
 module Poi.Operation where
 
-data PoiOperationError = PoiDeleteError deriving (Show, Eq)
+data PoiOperationError
+  = PoiDeleteError
+  | PoiMoveError
+  | PoiRollbackError
+  deriving (Show, Eq)
 
 type PoiOperationResult a = Either PoiOperationError a
