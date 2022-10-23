@@ -1,13 +1,13 @@
 module Poi.Test.Entity.MetaInfo (props) where
 
-import System.Random
-import Data.UUID
 import Data.Maybe
 import Data.Time.Clock
 import Data.Time.Format.ISO8601
+import Data.UUID
 import Poi.Entity
 import Poi.Test.Arbitrary
 import Poi.Time
+import System.Random
 import Test.Tasty
 import Test.Tasty.QuickCheck
 

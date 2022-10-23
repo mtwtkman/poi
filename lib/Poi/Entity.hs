@@ -12,10 +12,10 @@ import Data.Time.LocalTime
 import Data.UUID
 import Data.UUID.V4
 import Poi.Time
+import System.Directory
 import System.FilePath
 import Text.RE.Replace
 import Text.RE.TDFA.String
-import System.Directory
 
 class Serialize a where
   serialize :: a -> String

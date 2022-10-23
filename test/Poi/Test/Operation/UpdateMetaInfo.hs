@@ -38,5 +38,5 @@ prop_deleteMetaInfo =
         \(NonEmpty ms) -> do
           rnd <- mkStdGen
           let picked = fst $ pickMetaInfo rnd ms
-          return $ deleteMetaInfo ms picked == Right (takeWhile (/= picked) ms ++ tail(dropWhile (/= picked) ms))
+          return $ deleteMetaInfo ms picked == Right (takeWhile (/= picked) ms ++ tail (dropWhile (/= picked) ms))
     ]

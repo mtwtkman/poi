@@ -3,12 +3,12 @@
 
 module Poi.Test.Arbitrary where
 
-import Data.UUID
 import Control.Monad
 import Data.Fixed
 import Data.Ratio
 import Data.Time.Calendar
 import Data.Time.Clock
+import Data.UUID
 import Poi.Entity
 import Poi.Time
 import System.Random
@@ -68,4 +68,3 @@ pickMetaInfo rnd xs =
   let len = length xs - 1
       (i, g) = randomR (0, len) rnd
    in (xs !! i, g)
-
