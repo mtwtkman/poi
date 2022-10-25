@@ -42,7 +42,8 @@ poiCommand =
         <> command "put" (info putCommand (progDesc "Move objects to trushbox safety"))
         <> command "setup" (info setupCommand (progDesc "Setup trashbox"))
         <> command "back" (info backCommand (progDesc "Put back a trashed object to its original location"))
-    ) <**> helper
+    )
+    <**> helper
 
 runPutCommand :: PutOption -> IO ()
 runPutCommand (x : xs) = do
@@ -59,12 +60,18 @@ runPoiCommand tb Setup = do
 runPoiCommand tb Back = do
   print $ "back, tb=" ++ show tb
 
-trashBoxLocation :: IO FilePath
+doesNeedToSetup :: TrashBox -> IO Bool
+doesNeedToSetup (MkTrashBox b) = doesPathExist b
+
+trashBoxLocation :: IO TrashBox
 trashBoxLocation = do
   poiRoot <- lookupEnv "POI_ROOT"
-  maybe ((</> ".poi") <$> getHomeDirectory) absolutePath poiRoot
+  MkTrashBox <$> maybe ((</> ".poi") <$> getHomeDirectory) absolutePath poiRoot
 
 main :: IO ()
 main = do
   tb <- trashBoxLocation
-  runPoiCommand (MkTrashBox tb) =<< execParser (info poiCommand idm)
+  tbExists <- doesNeedToSetup tb
+  if tbExists
+    then runPoiCommand tb =<< execParser (info poiCommand idm)
+    else putStrLn $ show tb ++ "does not exists, so you need to run `poi setup`"

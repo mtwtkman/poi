@@ -1,9 +1,9 @@
 module Poi.Action.Delete where
 
 import Data.Either
-import Poi.Entity
 import Poi.Action
 import Poi.Action.UpdateMetaInfo
+import Poi.Entity
 import System.Directory
 
 deleteObject :: TrashBox -> MetaInfo -> IO ()

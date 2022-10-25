@@ -1,8 +1,8 @@
 module Poi.Test.Action.UpdateMetaInfo (props) where
 
 import Data.Maybe
-import Poi.Entity
 import Poi.Action.UpdateMetaInfo
+import Poi.Entity
 import Poi.Test.Arbitrary
 import System.Random
 import Test.QuickCheck

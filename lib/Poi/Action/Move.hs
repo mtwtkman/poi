@@ -1,11 +1,11 @@
 module Poi.Action.Move where
 
+import Data.UUID
+import Poi.Action
+import Poi.Action.UpdateMetaInfo
 import Poi.Entity
 import System.Directory
 import System.FilePath
-import Poi.Action.UpdateMetaInfo
-import Poi.Action
-import Data.UUID
 
 absoluteObjectPath :: FilePath -> IO ObjectPath
 absoluteObjectPath p = MkObjectPath <$> absolutePath p
