@@ -2,18 +2,23 @@ module Main where
 
 import Control.Monad
 import Data.List
+import Data.Maybe
 import Data.Semigroup ((<>))
 import Options.Applicative
+import Poi.Action.Move
 import qualified Poi.Action.Setup as SetupOp
 import Poi.Entity
 import System.Directory
+import System.Environment
 import System.FilePath.Posix
 
-type PutOptions = [FilePath]
+type PutOption = [FilePath]
+
+type TrashBoxLocationOption = FilePath
 
 data Command
   = List
-  | Put PutOptions
+  | Put PutOption
   | Setup
   | Back
   deriving (Show, Eq)
@@ -21,27 +26,45 @@ data Command
 putCommand :: Parser Command
 putCommand = Put <$> many (argument str (metavar "FILEPATH"))
 
+listCommand :: Parser Command
+listCommand = pure List
+
+setupCommand :: Parser Command
+setupCommand = pure Setup
+
+backCommand :: Parser Command
+backCommand = pure Back
+
 poiCommand :: Parser Command
 poiCommand =
   subparser
-    ( command "list" (info (pure List) (progDesc "List trahsed objects"))
+    ( command "list" (info listCommand (progDesc "List trahsed objects"))
         <> command "put" (info putCommand (progDesc "Move objects to trushbox safety"))
-        <> command "setup" (info (pure Setup) (progDesc "Setup trashbox"))
-        <> command "back" (info (pure Back) (progDesc "Put back a trashed object to its original location"))
-    )
+        <> command "setup" (info setupCommand (progDesc "Setup trashbox"))
+        <> command "back" (info backCommand (progDesc "Put back a trashed object to its original location"))
+    ) <**> helper
 
-runPoiCommand :: Command -> IO ()
-runPoiCommand List = print "list command"
-runPoiCommand (Put filepaths) = print $ intercalate "," filepaths
-runPoiCommand Setup = do
-  home <- getHomeDirectory
-  let trashboxDir = home </> ".poi"
-  result <- SetupOp.createTrashBoxDirectory . MkTrashBox $ trashboxDir
+runPutCommand :: PutOption -> IO ()
+runPutCommand (x : xs) = do
+  runPutCommand xs
+
+runPoiCommand :: TrashBox -> Command -> IO ()
+runPoiCommand tb List = print $ "list command, tb=" ++ show tb
+runPoiCommand tb (Put filepaths) = print $ intercalate "," filepaths ++ " tb=" ++ show tb
+runPoiCommand tb Setup = do
+  result <- SetupOp.createTrashBoxDirectory tb
   case result of
-    SetupOp.CreatedTrahsBox -> print $ "created " ++ trashboxDir
-    SetupOp.TrashBoxAlreadyExists -> print $ trashboxDir ++ " exists, so do nothing"
-runPoiCommand Back = do
-  print "back"
+    SetupOp.CreatedTrahsBox -> print $ "created " ++ show tb
+    SetupOp.TrashBoxAlreadyExists -> print $ show tb ++ " exists, so do nothing"
+runPoiCommand tb Back = do
+  print $ "back, tb=" ++ show tb
+
+trashBoxLocation :: IO FilePath
+trashBoxLocation = do
+  poiRoot <- lookupEnv "POI_ROOT"
+  maybe ((</> ".poi") <$> getHomeDirectory) absolutePath poiRoot
 
 main :: IO ()
-main = runPoiCommand =<< execParser (info poiCommand idm)
+main = do
+  tb <- trashBoxLocation
+  runPoiCommand (MkTrashBox tb) =<< execParser (info poiCommand idm)

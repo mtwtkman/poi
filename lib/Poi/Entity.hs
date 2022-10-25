@@ -108,7 +108,7 @@ parseMetaInfoSource s =
   let matched = s ?=~ [reBI|id=${id}([0-9a-z]{8}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{12}),path=${path}(.+),trashed-at=${trashedAt}([0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(\.[0-9]+)?Z).*|]
    in MkCapturedMetaInfo (matched !$$? capturePath) (matched !$$? captureTrashedAt) (matched !$$? captureId)
 
-newtype TrashBox = MkTrashBox FilePath deriving (Show)
+newtype TrashBox = MkTrashBox FilePath deriving (Show, Eq)
 
 metaInfoFileLocation :: TrashBox -> FilePath
 metaInfoFileLocation (MkTrashBox path) = path </> "metainfo"

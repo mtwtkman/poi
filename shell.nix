@@ -10,7 +10,7 @@ mkShell {
     alias b="cabal build"
     alias c="cabal clean"
     alias fmt="ormolu -i ./**/*.hs"
-    alias r="cabal run"
+    alias r="cabal run --"
     alias repl="cabal repl"
     alias t="cabal test"
   '';
