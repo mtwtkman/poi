@@ -73,5 +73,5 @@ main = do
   tb <- trashBoxLocation
   tbExists <- doesNeedToSetup tb
   if tbExists
-    then runPoiCommand tb =<< execParser (info poiCommand idm)
+    then runPoiCommand tb =<< execParser (info poiCommand (progDesc "The default location of trashbox is `~/.poi` but you can specify the location of trashbox by using `POI_ROOT` environment variable."))
     else putStrLn $ show tb ++ "does not exists, so you need to run `poi setup`"
