@@ -23,6 +23,7 @@ library
       Poi.Action
       Poi.Time
       Poi.Entity
+      Poi.EffMonad
     build-depends:
       base,
       time,
@@ -30,6 +31,7 @@ library
       filepath,
       regex,
       text,
+      hashmap,
       uuid
 
 test-suite test
