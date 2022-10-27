@@ -23,7 +23,6 @@ library
       Poi.Action
       Poi.Time
       Poi.Entity
-      Poi.EffMonad
     build-depends:
       base,
       time,
