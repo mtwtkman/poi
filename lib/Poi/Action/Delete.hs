@@ -7,8 +7,7 @@ import Poi.Entity
 import System.Directory
 
 deleteObject :: TrashBox -> MetaInfo -> IO ()
-deleteObject tb m = do
-  undefined
+deleteObject tb m = removeDirectoryRecursive $ trashedObjectPath tb m
 
 deleteFromTrashBox :: TrashBox -> MetaInfo -> IO (PoiActionResult ())
 deleteFromTrashBox tb m = do
