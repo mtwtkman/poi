@@ -121,3 +121,6 @@ metaInfoFromFilePath p = do
   uuid <- nextRandom
   t <- getCurrentTimestamp
   return $ MkMetaInfo (MkObjectPath p) (MkTrashedAt t) uuid
+
+trashedObjectPath :: TrashBox -> MetaInfo -> FilePath
+trashedObjectPath (MkTrashBox tb) m = tb </> toString (unId m)

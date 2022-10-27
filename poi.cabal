@@ -30,7 +30,6 @@ library
       filepath,
       regex,
       text,
-      hashmap,
       uuid
 
 test-suite test
@@ -52,4 +51,5 @@ test-suite test
       time,
       poi,
       random,
+      filepath,
       uuid
