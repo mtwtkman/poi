@@ -17,7 +17,7 @@ trash :: TrashBox -> FilePath -> IO (PoiActionResult ())
 trash tb src = do
   absolutePath <- absoluteObjectPath src
   metainfo <- metaInfoFromFilePath src
-  renameDirectory src $ buildDest tb metainfo
+  renamePath src $ buildDest tb metainfo
   result <- addMetaInfoToFile tb metainfo
   case result of
     Right _ -> return $ Right ()
@@ -27,7 +27,7 @@ back :: TrashBox -> MetaInfo -> IO (PoiActionResult ())
 back tb m = do
   let p = unObjectPath m
       uuid = unId m
-  renameDirectory (toString uuid) (serialize p)
+  renamePath (toString uuid) (serialize p)
   result <- deleteMetaInfoFromFile tb m
   case result of
     Right _ -> return $ Right ()

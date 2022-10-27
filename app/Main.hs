@@ -5,27 +5,28 @@ import Data.List
 import Data.Maybe
 import Data.Semigroup ((<>))
 import Options.Applicative
-import Poi.Action.Move
-import qualified Poi.Action.Setup as SetupOp
+import qualified Poi.Action.Move as MoveAction
+import qualified Poi.Action.Setup as SetupAction
+import qualified Poi.Action.List as ListAction
 import Poi.Entity
 import System.Directory
 import System.Environment
 import System.FilePath.Posix
 
-type PutOption = [FilePath]
+type MoveOption = [FilePath]
 
 type TrashBoxLocationOption = FilePath
 
 data Command
   = List
-  | Put PutOption
+  | Move MoveOption
   | Setup
   | Back
   | Delete
   deriving (Show, Eq)
 
-putCommand :: Parser Command
-putCommand = Put <$> many (argument str (metavar "FILEPATH"))
+moveCommand :: Parser Command
+moveCommand = Move <$> many (argument str (metavar "FILEPATH"))
 
 listCommand :: Parser Command
 listCommand = pure List
@@ -43,25 +44,25 @@ poiCommand :: Parser Command
 poiCommand =
   subparser
     ( command "list" (info listCommand (progDesc "List trahsed objects"))
-        <> command "put" (info putCommand (progDesc "Move objects to trashbox safety"))
+        <> command "move" (info moveCommand (progDesc "Move objects to trashbox safety"))
         <> command "setup" (info setupCommand (progDesc "Setup trashbox"))
-        <> command "back" (info backCommand (progDesc "Put back a trashed object to its original location"))
+        <> command "back" (info backCommand (progDesc "Move back a trashed object to its original location"))
         <> command "delete" (info backCommand (progDesc "Delete trashed object from trashbox"))
     )
     <**> helper
 
-runPutCommand :: PutOption -> IO ()
-runPutCommand (x : xs) = do
-  runPutCommand xs
+runMoveCommand :: MoveOption -> IO ()
+runMoveCommand (x : xs) = do
+  runMoveCommand xs
 
 runPoiCommand :: TrashBox -> Command -> IO ()
-runPoiCommand tb List = print $ "list command, tb=" ++ show tb
-runPoiCommand tb (Put filepaths) = print $ intercalate "," filepaths ++ " tb=" ++ show tb
+runPoiCommand tb List = ListAction.printCurrentIndexedMetaInfoList tb
+runPoiCommand tb (Move filepaths) = mapM_ (MoveAction.trash tb) filepaths
 runPoiCommand tb Setup = do
-  result <- SetupOp.createTrashBoxDirectory tb
+  result <- SetupAction.createTrashBoxDirectory tb
   case result of
-    SetupOp.CreatedTrahsBox -> print $ "created " ++ show tb
-    SetupOp.TrashBoxAlreadyExists -> print $ show tb ++ " exists, so do nothing"
+    SetupAction.CreatedTrahsBox -> print $ "created " ++ show tb
+    SetupAction.TrashBoxAlreadyExists -> print $ show tb ++ " exists, so do nothing"
 runPoiCommand tb Back = do
   print $ "back, tb=" ++ show tb
 runPoiCommand tb Delete = do
