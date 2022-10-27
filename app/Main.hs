@@ -21,6 +21,7 @@ data Command
   | Put PutOption
   | Setup
   | Back
+  | Delete
   deriving (Show, Eq)
 
 putCommand :: Parser Command
@@ -35,13 +36,17 @@ setupCommand = pure Setup
 backCommand :: Parser Command
 backCommand = pure Back
 
+deleteCommand :: Parser Command
+deleteCommand = pure Delete
+
 poiCommand :: Parser Command
 poiCommand =
   subparser
     ( command "list" (info listCommand (progDesc "List trahsed objects"))
-        <> command "put" (info putCommand (progDesc "Move objects to trushbox safety"))
+        <> command "put" (info putCommand (progDesc "Move objects to trashbox safety"))
         <> command "setup" (info setupCommand (progDesc "Setup trashbox"))
         <> command "back" (info backCommand (progDesc "Put back a trashed object to its original location"))
+        <> command "delete" (info backCommand (progDesc "Delete trashed object from trashbox"))
     )
     <**> helper
 
@@ -59,6 +64,8 @@ runPoiCommand tb Setup = do
     SetupOp.TrashBoxAlreadyExists -> print $ show tb ++ " exists, so do nothing"
 runPoiCommand tb Back = do
   print $ "back, tb=" ++ show tb
+runPoiCommand tb Delete = do
+  print $ "delete, tb=" ++ show tb
 
 doesNeedToSetup :: TrashBox -> IO Bool
 doesNeedToSetup (MkTrashBox b) = doesPathExist b
