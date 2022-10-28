@@ -10,14 +10,13 @@ import System.FilePath
 absoluteObjectPath :: FilePath -> IO ObjectPath
 absoluteObjectPath p = MkObjectPath <$> absolutePath p
 
-buildDest :: TrashBox -> MetaInfo -> FilePath
-buildDest (MkTrashBox box) m = box </> serialize (unObjectPath m)
-
 trash :: TrashBox -> FilePath -> IO (PoiActionResult ())
 trash tb src = do
   absolutePath <- absoluteObjectPath src
   metainfo <- metaInfoFromFilePath src
-  renamePath src $ buildDest tb metainfo
+  let dest = trashedObjectPath tb metainfo
+  createDirectory dest
+  renamePath src $ dest </> src
   result <- addMetaInfoToFile tb metainfo
   case result of
     Right _ -> return $ Right ()

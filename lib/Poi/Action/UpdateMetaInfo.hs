@@ -34,6 +34,9 @@ addMetaInfo metas = Right . (<>) metas . pure
 writeMetaInfoFile :: TrashBox -> [MetaInfo] -> IO ()
 writeMetaInfoFile tb metas = writeFile (metaInfoFileLocation tb) (unlines $ map serialize metas)
 
+createFile :: FilePath -> IO ()
+createFile p = writeFile p ""
+
 updateMetaInfoFile :: TrashBox -> MetaInfo -> ([MetaInfo] -> MetaInfo -> MetaInfoUpdateResult [MetaInfo]) -> IO (MetaInfoFileAccessResult [MetaInfo])
 updateMetaInfoFile tb m process = do
   contents <- getCurrentWholeMetaInfo tb
@@ -44,7 +47,9 @@ updateMetaInfoFile tb m process = do
           writeMetaInfoFile tb newValues
           return $ Right newValues
         Left reason -> return $ Left (MetaInfoFileUpdateError reason)
-    Left _ -> return $ Left FileNotFound
+    Left _ -> do
+      createFile $ metaInfoFileLocation tb
+      return $ Right []
 
 addMetaInfoToFile :: TrashBox -> MetaInfo -> IO (MetaInfoFileAccessResult [MetaInfo])
 addMetaInfoToFile tb m = updateMetaInfoFile tb m addMetaInfo

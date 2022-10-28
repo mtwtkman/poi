@@ -14,7 +14,7 @@ indexedList = go []
     go acc index [] = acc
 
 listIndexedAll :: [MetaInfo] -> [(Int, MetaInfo)]
-listIndexedAll = listIndexedAll
+listIndexedAll = indexedList 0
 
 showIndexedMetaInfo :: TimeZone -> (Int, MetaInfo) -> String
 showIndexedMetaInfo tz (index, m) = show index ++ ": " ++ localTrashedAt ++ " " ++ serialize (unObjectPath m)
