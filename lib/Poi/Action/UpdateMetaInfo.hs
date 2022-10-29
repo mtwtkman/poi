@@ -37,6 +37,9 @@ writeMetaInfoFile tb metas = writeFile (metaInfoFileLocation tb) (unlines $ map 
 createFile :: FilePath -> IO ()
 createFile p = writeFile p ""
 
+createMetaInfoFile :: TrashBox -> IO ()
+createMetaInfoFile = createFile . metaInfoFileLocation
+
 updateMetaInfoFile :: TrashBox -> MetaInfo -> ([MetaInfo] -> MetaInfo -> MetaInfoUpdateResult [MetaInfo]) -> IO (MetaInfoFileAccessResult [MetaInfo])
 updateMetaInfoFile tb m process = do
   contents <- getCurrentWholeMetaInfo tb
@@ -48,8 +51,8 @@ updateMetaInfoFile tb m process = do
           return $ Right newValues
         Left reason -> return $ Left (MetaInfoFileUpdateError reason)
     Left _ -> do
-      createFile $ metaInfoFileLocation tb
-      return $ Right []
+      createMetaInfoFile tb
+      updateMetaInfoFile tb m process
 
 addMetaInfoToFile :: TrashBox -> MetaInfo -> IO (MetaInfoFileAccessResult [MetaInfo])
 addMetaInfoToFile tb m = updateMetaInfoFile tb m addMetaInfo

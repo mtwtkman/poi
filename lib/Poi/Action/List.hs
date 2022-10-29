@@ -16,23 +16,41 @@ indexedList = go []
 listIndexedAll :: [MetaInfo] -> [(Int, MetaInfo)]
 listIndexedAll = indexedList 0
 
-showIndexedMetaInfo :: TimeZone -> (Int, MetaInfo) -> String
-showIndexedMetaInfo tz (index, m) = show index ++ ": " ++ localTrashedAt ++ " " ++ serialize (unObjectPath m)
+metaInfoListRow :: String -> TimeZone -> MetaInfo -> String
+metaInfoListRow prefix tz m = prefix ++ localTrashedAt ++ " " ++ serialize (unObjectPath m)
   where
     (MkTrashedAt t) = unTrashedAt m
     localTrashedAt = iso8601Show $ timestampToLocalTime tz t
 
-showIndexedMetaInfoList :: TimeZone -> [MetaInfo] -> String
-showIndexedMetaInfoList tz ms = intercalate "\n" $ map (showIndexedMetaInfo tz) (listIndexedAll ms)
+indexedMetaInfoListRow :: Int -> TimeZone -> MetaInfo -> String
+indexedMetaInfoListRow index = metaInfoListRow (show index ++ ": ")
+
+buildMetaInfoList :: TimeZone -> [MetaInfo] -> String
+buildMetaInfoList tz ms = unlines $ map (metaInfoListRow "" tz) ms
+
+buildIndexedMetaInfoList :: TimeZone -> [MetaInfo] -> String
+buildIndexedMetaInfoList tz ms = unlines $ map (\(i, m) -> indexedMetaInfoListRow i tz m) (listIndexedAll ms)
 
 printIndexedMetaInfoList :: [MetaInfo] -> IO ()
 printIndexedMetaInfoList ms = do
   tz <- getCurrentTimeZone
-  putStrLn $ showIndexedMetaInfoList tz ms
+  putStrLn $ buildIndexedMetaInfoList tz ms
+
+printMetaInfoList :: [MetaInfo] -> IO ()
+printMetaInfoList ms = do
+  tz <- getCurrentTimeZone
+  putStrLn $ buildMetaInfoList tz ms
 
 printCurrentIndexedMetaInfoList :: TrashBox -> IO ()
 printCurrentIndexedMetaInfoList tb = do
   m <- getCurrentWholeMetaInfo tb
   case m of
     Right ms -> printIndexedMetaInfoList ms
+    Left reason -> print $ show reason
+
+printCurrentMetaInfoList :: TrashBox -> IO ()
+printCurrentMetaInfoList tb = do
+  m <- getCurrentWholeMetaInfo tb
+  case m of
+    Right ms -> printMetaInfoList ms
     Left reason -> print $ show reason

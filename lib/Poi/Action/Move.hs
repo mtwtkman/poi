@@ -24,10 +24,14 @@ trash tb src = do
 
 back :: TrashBox -> MetaInfo -> IO (PoiActionResult ())
 back tb m = do
-  let p = unObjectPath m
+  let p = serialize (unObjectPath m)
       uuid = unId m
-  renamePath (toString uuid) (serialize p)
-  result <- deleteMetaInfoFromFile tb m
-  case result of
-    Right _ -> return $ Right ()
-    Left _ -> return $ Left PoiRollbackError
+  isDuplicated <- doesPathExist p
+  if isDuplicated
+    then return $ Left (PoiRollbackError ExistsSamePath)
+    else do
+      renamePath (toString uuid) p
+      result <- deleteMetaInfoFromFile tb m
+      case result of
+        Right _ -> return $ Right ()
+        Left _ -> return $ Left (PoiRollbackError SomethingWrong)

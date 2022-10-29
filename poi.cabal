@@ -23,6 +23,7 @@ library
       Poi.Action
       Poi.Time
       Poi.Entity
+      Poi.Action.Prompt
     build-depends:
       base,
       time,
