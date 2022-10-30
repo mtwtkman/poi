@@ -7,7 +7,7 @@ mkShell {
     haskell-language-server
     haskellPackages.ormolu
   ];
-  shellHooks = ''
+  shellHook = ''
     alias b="cabal build"
     alias c="cabal clean"
     alias fmt="ormolu -i ./**/*.hs"
