@@ -47,7 +47,7 @@ poiCommand =
     <**> helper
 
 runPoiCommand :: TrashBox -> Command -> IO ()
-runPoiCommand tb List = ListAction.printCurrentIndexedMetaInfoList tb
+runPoiCommand tb List = ListAction.printCurrentMetaInfoList tb
 runPoiCommand tb (Move filepaths) = mapM_ (MoveAction.trash tb) filepaths
 runPoiCommand tb Back = print $ "back, tb=" ++ show tb
 runPoiCommand tb Delete = print $ "delete, tb=" ++ show tb
