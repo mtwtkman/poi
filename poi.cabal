@@ -31,7 +31,8 @@ library
       filepath,
       regex,
       text,
-      uuid
+      uuid,
+      mtl
 
 test-suite test
     type:             exitcode-stdio-1.0
