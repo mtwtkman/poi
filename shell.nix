@@ -14,5 +14,6 @@ mkShell {
     alias r="cabal run --"
     alias repl="cabal repl"
     alias t="cabal test"
+    alias devrun="POI_ROOT=sandbox r poi"
   '';
 }
