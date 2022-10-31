@@ -8,6 +8,6 @@ jobs:
       - uses: cachix/install-nix-action@v17
         with:
           nix_path: nixpkgs=channel:nixos-unstable
-      - run: nix-shell
+      - run: nix develop
       - run: cabal update
       - run: cabal test
