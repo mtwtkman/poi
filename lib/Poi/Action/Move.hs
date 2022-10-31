@@ -30,7 +30,7 @@ back tb m = do
   if isDuplicated
     then return $ Left (PoiRollbackError ExistsSamePath)
     else do
-      renamePath (toString uuid) p
+      renamePath (show tb </> toString uuid) p
       result <- deleteMetaInfoFromFile tb m
       case result of
         Right _ -> return $ Right ()

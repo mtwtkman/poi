@@ -14,19 +14,19 @@ import System.Directory
 import System.Environment
 import System.FilePath.Posix
 
-type MoveOption = [FilePath]
+type TrashOption = [FilePath]
 
 type TrashBoxLocationOption = FilePath
 
 data Command
   = List
-  | Move MoveOption
+  | Trash TrashOption
   | Back
   | Delete
   deriving (Show, Eq)
 
 moveCommand :: Parser Command
-moveCommand = Move <$> many (argument str (metavar "FILEPATH"))
+moveCommand = Trash <$> many (argument str (metavar "FILEPATH"))
 
 listCommand :: Parser Command
 listCommand = pure List
@@ -41,15 +41,15 @@ poiCommand :: Parser Command
 poiCommand =
   subparser
     ( command "list" (info listCommand (progDesc "List trahsed objects"))
-        <> command "move" (info moveCommand (progDesc "Move objects to trashbox safety"))
-        <> command "back" (info backCommand (progDesc "Move back a trashed object to its original location"))
+        <> command "trash" (info moveCommand (progDesc "Trash objects to trashbox safety"))
+        <> command "back" (info backCommand (progDesc "Rollback a trashed object to its original location"))
         <> command "delete" (info backCommand (progDesc "Delete trashed object from trashbox"))
     )
     <**> helper
 
 runPoiCommand :: TrashBox -> Command -> IO ()
 runPoiCommand tb List = ListAction.printCurrentMetaInfoList tb
-runPoiCommand tb (Move filepaths) = mapM_ (MoveAction.trash tb) filepaths
+runPoiCommand tb (Trash filepaths) = mapM_ (MoveAction.trash tb) filepaths
 runPoiCommand tb Back = do
   m <- PromptAction.askMetaInfo tb
   result <- MoveAction.back tb m
