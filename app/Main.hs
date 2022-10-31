@@ -8,6 +8,7 @@ import Options.Applicative
 import qualified Poi.Action.List as ListAction
 import qualified Poi.Action.Move as MoveAction
 import qualified Poi.Action.Setup as SetupAction
+import qualified Poi.Action.Prompt as PromptAction
 import Poi.Entity
 import System.Directory
 import System.Environment
@@ -49,7 +50,13 @@ poiCommand =
 runPoiCommand :: TrashBox -> Command -> IO ()
 runPoiCommand tb List = ListAction.printCurrentMetaInfoList tb
 runPoiCommand tb (Move filepaths) = mapM_ (MoveAction.trash tb) filepaths
-runPoiCommand tb Back = print $ "back, tb=" ++ show tb
+runPoiCommand tb Back = do
+  m <- PromptAction.askMetaInfo tb
+  result <- MoveAction.back tb m
+  case result of
+    Right _ -> return ()
+    Left reason -> print reason
+
 runPoiCommand tb Delete = print $ "delete, tb=" ++ show tb
 
 trashBoxLocation :: IO TrashBox
