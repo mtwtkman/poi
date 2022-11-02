@@ -6,8 +6,7 @@ module Poi.Test.Arbitrary where
 import Control.Monad
 import Data.Fixed
 import Data.Ratio
-import Data.Time.Calendar
-import Data.Time.Clock
+import Data.Time
 import Data.UUID
 import Poi.Entity
 import Poi.Time

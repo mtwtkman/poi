@@ -5,10 +5,8 @@ module Poi.Entity where
 
 import Data.List
 import Data.Text (pack)
-import Data.Time.Clock
-import Data.Time.Clock.POSIX
+import Data.Time
 import Data.Time.Format.ISO8601
-import Data.Time.LocalTime
 import Data.UUID
 import Data.UUID.V4
 import Poi.Time
@@ -39,8 +37,8 @@ absolutePath :: FilePath -> IO FilePath
 absolutePath p
   | isAbsolute p = return p
   | otherwise = do
-    d <- getCurrentDirectory
-    return $ d </> p
+      d <- getCurrentDirectory
+      return $ d </> p
 
 newtype TrashedAt = MkTrashedAt Timestamp deriving (Show, Eq)
 
@@ -57,10 +55,8 @@ instance Deserialize TrashedAt where
     value <- iso8601ParseM s
     return $ MkTrashedAt (utcTimeToTimestamp value)
 
-trashedAtToLocalTime :: TrashedAt -> IO LocalTime
-trashedAtToLocalTime (MkTrashedAt t) = do
-  tz <- getCurrentTimeZone
-  return $ timestampToLocalTime tz t
+trashedAtToLocalTime :: TimeZone -> TrashedAt -> LocalTime
+trashedAtToLocalTime tz (MkTrashedAt t) = timestampToLocalTime tz t
 
 data MetaInfo = MkMetaInfo
   { unObjectPath :: ObjectPath,
@@ -124,3 +120,6 @@ metaInfoFromFilePath p = do
 
 trashedObjectPath :: TrashBox -> MetaInfo -> FilePath
 trashedObjectPath (MkTrashBox tb) m = tb </> toString (unId m)
+
+findMetaInfoByDayBefore :: TimeZone -> [MetaInfo] -> Day -> [MetaInfo]
+findMetaInfoByDayBefore tz ms day = filter (\m -> localDay (trashedAtToLocalTime tz (unTrashedAt m)) <= day) ms

@@ -10,13 +10,19 @@ import Test.Tasty
 import Test.Tasty.QuickCheck
 
 props :: TestTree
-props = testGroup "Testing Poi.Action.UpdateMetaInfo" [prop_addMetaInfo, prop_findMetaInfo, prop_deleteMetaInfo]
+props =
+  testGroup
+    "Testing Poi.Action.UpdateMetaInfo"
+    [ prop_addMetaInfo,
+      prop_findMetaInfo,
+      prop_deleteMetaInfo
+    ]
 
 prop_addMetaInfo =
   testGroup
     "addMetaInfo"
     [ testProperty "added metainfo to last" $
-        \ms m -> (last <$> addMetaInfo (ms :: [MetaInfo]) (m :: MetaInfo)) == Right m
+        \(NonEmpty ms) m -> (last <$> addMetaInfo (ms :: [MetaInfo]) (m :: MetaInfo)) == Right m
     ]
 
 prop_findMetaInfo =

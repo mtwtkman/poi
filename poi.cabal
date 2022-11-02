@@ -24,6 +24,7 @@ library
       Poi.Time
       Poi.Entity
       Poi.Action.Prompt
+      Poi.Action.Erase
     build-depends:
       base,
       time,
