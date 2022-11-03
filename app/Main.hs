@@ -16,6 +16,8 @@ import System.FilePath.Posix
 
 type TrashOption = [FilePath]
 
+type EraseOption = Int
+
 type TrashBoxLocationOption = FilePath
 
 data Command
@@ -23,7 +25,7 @@ data Command
   | Trash TrashOption
   | Back
   | Delete
-  | Erase
+  | Erase EraseOption
   deriving (Show, Eq)
 
 moveCommand :: Parser Command
@@ -39,7 +41,12 @@ deleteCommand :: Parser Command
 deleteCommand = pure Delete
 
 eraseCommand :: Parser Command
-eraseCommand = pure Erase
+eraseCommand = Erase <$> option auto
+                          ( long "days"
+                          <> short 'd'
+                          <> metavar "INT"
+                          <> help "Number of days to erase objects which trashed older than this value"
+                          )
 
 poiCommand :: Parser Command
 poiCommand =
@@ -62,7 +69,7 @@ runPoiCommand tb Back = do
     Right _ -> return ()
     Left reason -> print reason
 runPoiCommand tb Delete = print $ "delete, tb=" ++ show tb
-runPoiCommand tb Erase = print $ "erase, tb=" ++ show tb
+runPoiCommand tb (Erase opt) = print $ "erase, tb=" ++ show tb
 
 trashBoxLocation :: IO TrashBox
 trashBoxLocation = do
