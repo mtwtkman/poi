@@ -7,8 +7,8 @@ import Data.Semigroup ((<>))
 import Options.Applicative
 import qualified Poi.Action.List as ListAction
 import qualified Poi.Action.Move as MoveAction
-import qualified Poi.Action.Setup as SetupAction
 import qualified Poi.Action.Prompt as PromptAction
+import qualified Poi.Action.Setup as SetupAction
 import Poi.Entity
 import System.Directory
 import System.Environment
@@ -41,12 +41,16 @@ deleteCommand :: Parser Command
 deleteCommand = pure Delete
 
 eraseCommand :: Parser Command
-eraseCommand = Erase <$> option auto
-                          ( long "days"
-                          <> short 'd'
-                          <> metavar "INT"
-                          <> help "Number of days to erase objects which trashed older than this value"
-                          )
+eraseCommand =
+  Erase
+    <$> option
+      auto
+      ( long "days"
+          <> short 'd'
+          <> metavar "INT"
+          <> help "Number of days to erase objects which trashed older than this value"
+          <> value 0
+      )
 
 poiCommand :: Parser Command
 poiCommand =
