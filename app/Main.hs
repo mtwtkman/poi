@@ -24,7 +24,6 @@ data Command
   = List
   | Trash TrashOption
   | Back
-  | Delete
   | Erase EraseOption
   deriving (Show, Eq)
 
@@ -36,9 +35,6 @@ listCommand = pure List
 
 backCommand :: Parser Command
 backCommand = pure Back
-
-deleteCommand :: Parser Command
-deleteCommand = pure Delete
 
 eraseCommand :: Parser Command
 eraseCommand =
@@ -58,7 +54,6 @@ poiCommand =
     ( command "list" (info listCommand (progDesc "List trahsed objects"))
         <> command "trash" (info moveCommand (progDesc "Trash objects to trashbox safety"))
         <> command "back" (info backCommand (progDesc "Rollback a trashed object to its original location"))
-        <> command "delete" (info backCommand (progDesc "Delete trashed object from trashbox"))
         <> command "erase" (info eraseCommand (progDesc "Erase trashed object permanently"))
     )
     <**> helper
@@ -72,7 +67,6 @@ runPoiCommand tb Back = do
   case result of
     Right _ -> return ()
     Left reason -> print reason
-runPoiCommand tb Delete = print $ "delete, tb=" ++ show tb
 runPoiCommand tb (Erase opt) = print $ "erase, tb=" ++ show tb
 
 trashBoxLocation :: IO TrashBox
