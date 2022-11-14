@@ -5,6 +5,7 @@ import Data.List
 import Data.Maybe
 import Data.Semigroup ((<>))
 import Options.Applicative
+import qualified Poi.Action.Erase as EraseAction
 import qualified Poi.Action.List as ListAction
 import qualified Poi.Action.Move as MoveAction
 import qualified Poi.Action.Prompt as PromptAction
@@ -16,15 +17,13 @@ import System.FilePath.Posix
 
 type TrashOption = [FilePath]
 
-type EraseOption = Int
-
 type TrashBoxLocationOption = FilePath
 
 data Command
   = List
   | Trash TrashOption
   | Back
-  | Erase EraseOption
+  | Erase
   deriving (Show, Eq)
 
 moveCommand :: Parser Command
@@ -37,16 +36,7 @@ backCommand :: Parser Command
 backCommand = pure Back
 
 eraseCommand :: Parser Command
-eraseCommand =
-  Erase
-    <$> option
-      auto
-      ( long "days"
-          <> short 'd'
-          <> metavar "INT"
-          <> help "Number of days to erase objects which trashed older than this value"
-          <> value 0
-      )
+eraseCommand = pure Erase
 
 poiCommand :: Parser Command
 poiCommand =
@@ -67,7 +57,9 @@ runPoiCommand tb Back = do
   case result of
     Right _ -> return ()
     Left reason -> print reason
-runPoiCommand tb (Erase opt) = print $ "erase, tb=" ++ show tb
+runPoiCommand tb Erase = do
+  m <- PromptAction.askMetaInfo tb
+  EraseAction.erase tb m
 
 trashBoxLocation :: IO TrashBox
 trashBoxLocation = do

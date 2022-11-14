@@ -6,7 +6,12 @@ import Poi.Action.UpdateMetaInfo
 import System.Directory
 
 erase :: TrashBox -> MetaInfo -> IO ()
-erase tb m = removeDirectoryRecursive $ trashedObjectPath tb m
+erase tb m = do
+  removeDirectoryRecursive $ trashedObjectPath tb m
+  result <- deleteMetaInfoFromFile tb m
+  case result of
+    Right _ -> return ()
+    Left reason -> fail $ show reason
 
 eraseDaysBefore :: TrashBox -> Day -> IO ()
 eraseDaysBefore tb day = do
