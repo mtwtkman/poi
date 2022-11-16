@@ -6,6 +6,7 @@ mkShell {
     cabal-install
     haskell-language-server
     haskellPackages.ormolu
+    haskellPackages.cabal2nix
   ];
   shellHook = ''
     alias b="cabal build"
@@ -14,6 +15,7 @@ mkShell {
     alias r="cabal run --"
     alias repl="cabal repl"
     alias t="cabal test"
+    alias release="cabal2nix . > poi.nix && nix-build"
     alias devrun="POI_ROOT=sandbox r poi"
   '';
 }
