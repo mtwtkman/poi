@@ -14,6 +14,7 @@ import Poi.Entity
 import System.Directory
 import System.Environment
 import System.FilePath.Posix
+import Poi.System.File
 
 type TrashOption = [FilePath]
 

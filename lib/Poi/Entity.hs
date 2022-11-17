@@ -33,13 +33,6 @@ newtype ObjectPath = MkObjectPath FilePath deriving (Show, Eq)
 instance Serialize ObjectPath where
   serialize (MkObjectPath o) = o
 
-absolutePath :: FilePath -> IO FilePath
-absolutePath p
-  | isAbsolute p = return p
-  | otherwise = do
-      d <- getCurrentDirectory
-      return $ d </> p
-
 newtype TrashedAt = MkTrashedAt Timestamp deriving (Show, Eq)
 
 instance Serialize TrashedAt where

@@ -6,6 +6,7 @@ import Poi.Action.UpdateMetaInfo
 import Poi.Entity
 import System.Directory
 import System.FilePath
+import Poi.System.File
 
 absoluteObjectPath :: FilePath -> IO ObjectPath
 absoluteObjectPath p = MkObjectPath <$> absolutePath p
