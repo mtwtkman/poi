@@ -1,0 +1,9 @@
+cradle:
+  cabal:
+    components:
+      - path: "./app"
+        component: "exe:poi"
+      - path: "./poi-core"
+        component: "lib:poi-core"
+      - path: "./test/poi-core"
+        component: "test:poi-core-test"

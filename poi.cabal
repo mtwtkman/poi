@@ -1,59 +1,33 @@
-cabal-version:      3.0
-name:               poi
-version:            0.1.0.0
+cabal-version: 3.0
+name:          poi
+version:       0.1.0.0
+license:       WTFPL
+author:        mtwtkman
+maintainer:    924277+mtwtkman@users.noreply.github.com
+build-type:    Simple
+
+common basic
+  ghc-options:      -Wall
+  default-language: Haskell2010
+  build-depends:    base
+
+common test-basic
+  build-depends:
+    , QuickCheck
+    , tasty
+    , tasty-quickcheck
 
 executable poi
-    hs-source-dirs:   app
-    main-is:          Main.hs
-    default-language: Haskell2010
-    build-depends:
-      base,
-      poi,
-      optparse-applicative,
-      directory,
-      filepath
-library
-    hs-source-dirs:   lib
-    default-language: Haskell2010
-    exposed-modules:
-      Poi.Action.List
-      Poi.Action.Move
-      Poi.Action.Setup
-      Poi.Action.UpdateMetaInfo
-      Poi.Action
-      Poi.Time
-      Poi.Entity
-      Poi.Action.Prompt
-      Poi.Action.Erase
-      Poi.System.File
-    build-depends:
-      base,
-      time,
-      directory,
-      filepath,
-      regex,
-      text,
-      uuid,
-      mtl
+  import:         basic
+  main-is:        Main.hs
+  hs-source-dirs: app
 
-test-suite test
-    type:             exitcode-stdio-1.0
-    hs-source-dirs:   test
-    main-is:          test.hs
-    default-language: Haskell2010
-    other-modules:
-      Poi.Test.Arbitrary
-      Poi.Test.Time
-      Poi.Test.Entity.MetaInfo
-      Poi.Test.Entity.TrashedAt
-      Poi.Test.Action.UpdateMetaInfo
-    build-depends:
-      base,
-      tasty,
-      tasty-quickcheck,
-      QuickCheck,
-      time,
-      poi,
-      random,
-      filepath,
-      uuid
+test-suite poi-core-test
+  import:         basic, test-basic
+  main-is:        tests.hs
+  hs-source-dirs: test/poi-core
+  type:           exitcode-stdio-1.0
+
+library poi-core
+  import:         basic
+  hs-source-dirs: poi-core
