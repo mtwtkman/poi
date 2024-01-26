@@ -41,8 +41,6 @@ You can use glob pattern to specify a file path.
 
 If you want to remove some file objects safety, `poi put` works for you.
 
-Trashed objects are retained 90 days default.
-
 ### command options
 
 `poi put` equipments some options.
@@ -122,7 +120,22 @@ If you want to delete some file objects permanently, `poi delete` works for you.
 
 ### command options
 
-`poi restore` equipments an option.
+`poi delete` equipments some options.
+
+#### --deprecated
+
+`--deprecated` allows you to specify a time range to delete bulky.
+
+Permitted format is `{non-zero positive number}[d(ay)/h(our)/m(in)]|all`.
+
+This value is included in the target time range. So:
+
+```sh
+$ poi --deprecated 9d # Delete all files which were trashed before than 9 days ago. (Target time range is `current time - 9 days <=`).
+$ poi --deprecated 1h # Delete all files which were trashed before than 1 hour ago. (Target time range is `current time - 1 hour <=`)
+$ poi --deprecated 10m # Delete all files which were trashed before than 10 minutes ago. (Target time range is `current time - 10 minutes <=`)
+$ poi --deprecated all # Delete all files in trash-can.
+```
 
 #### --interact
 
@@ -140,8 +153,7 @@ You can use this option to avoid the accidental deleting.
 
 | field | type | description | default |
 | ----- | ---- | ----------- | ------- |
-| trash-can-path | string | Required a valid file path. | `$HOME/.poi/TRASH-CAN` |
-| retention-days | number | Required a non-zero positive value. No upper limit. | `90` |
+| trash-can-path | string | Required a valid file path. | `$HOME/.poi/trash-can` |
 | conflict-prefix | string | If restoring file objects conflict against original path, this value is applied as prefix. | `poi-restore_` |
 
 All fields are optional. This means that fields not set value are applied `default` value.
