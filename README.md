@@ -140,8 +140,8 @@ You can use this option to avoid the accidental deleting.
 
 | field | type | description | default |
 | ----- | ---- | ----------- | ------- |
-| trash-can-path | string | Required a valid file path. | $HOME/.poi/TRASH-CAN |
-| retention-days | number | Required a non-zero positive value. No upper limit. | 90 |
-| conflict-prefix | string | If restoring file objects conflict against original path, this value is applied as prefix. | poi-restore_ |
+| trash-can-path | string | Required a valid file path. | `$HOME/.poi/TRASH-CAN` |
+| retention-days | number | Required a non-zero positive value. No upper limit. | `90` |
+| conflict-prefix | string | If restoring file objects conflict against original path, this value is applied as prefix. | `poi-restore_` |
 
 All fields are optional. This means that fields not set value are applied `default` value.
