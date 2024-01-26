@@ -19,7 +19,7 @@ If `poi` recognized that environment variable named `POI_TRASH_CAN_PATH` is set,
 ### Configuration file
 If `poi` found a config file named `poi.yaml`, `poi` refers the path from `poi.yaml`.
 
-`poi.yaml` detail is [here](#poi.yaml).
+`poi.yaml` detail is [here](#poiyaml).
 
 ### Default location
 If `poi` could not any trash-can location settings, `poi` does his job in `$HOME/.poi/TRASH-CAN`.
