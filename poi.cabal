@@ -29,5 +29,11 @@ test-suite poi-core-test
   type:           exitcode-stdio-1.0
 
 library poi-core
-  import:         basic
-  hs-source-dirs: poi-core
+  import:          basic
+  hs-source-dirs:  poi-core
+  build-depends:
+    , aeson
+    , mtl
+    , time
+
+  exposed-modules: Poi
