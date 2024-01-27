@@ -18,7 +18,7 @@ mkShell {
     alias fmt="ormolu -i ./**/*.hs"
     alias repl="cabal repl"
     alias run="cabal run --"
-    alias t="cabal test --test-show-details=always --test-options="--color always""
+    alias t="cabal test --test-show-details=always --test-options='--color always'"
     alias pack="cabal2nix . > nix/poi.nix"
   '';
 }
