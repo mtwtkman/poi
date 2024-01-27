@@ -6,7 +6,3 @@ data Config = Config
   , configConflictPrefix :: !String
   }
   deriving (Show, Eq)
-
-defaultConfig :: Config
-defaultConfig =
-  Config "~/.poi/TRASH-CAN" 90 "poi-restore_"
