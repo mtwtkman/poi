@@ -35,5 +35,6 @@ library poi-core
     , aeson
     , mtl
     , time
+    , directory
 
   exposed-modules: Poi
