@@ -1,8 +1,8 @@
 cradle:
   cabal:
     components:
-      - path: "./app"
-        component: "exe:poi"
+      - path: "./poi-cli"
+        component: "exe:poi-cli"
       - path: "./poi-core"
         component: "lib:poi-core"
       - path: "./test/poi-core"

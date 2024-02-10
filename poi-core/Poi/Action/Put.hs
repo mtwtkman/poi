@@ -1,8 +1,12 @@
 module Poi.Action.Put where
 
-import Control.Monad.Reader (ReaderT)
 import Poi.Entity.TrashCan (TrashCan)
 import Poi.Type.Result (Result)
+import Poi.Action (ActionT)
+import Poi.Monad (PoiMonad)
+import Control.Monad.Reader (MonadReader(ask))
 
-put :: TrashCan -> FilePath -> Result TrashCan
-put t f = undefined
+put :: (PoiMonad m) => FilePath -> ActionT m ()
+put f = do
+  tc <- ask
+  return ()
