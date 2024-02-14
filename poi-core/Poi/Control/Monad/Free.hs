@@ -1,4 +1,4 @@
-module Poi.Control.Free where
+module Poi.Control.Monad.Free where
 
 data Free f a = Pure !a | Impure !(f (Free f a))
 
@@ -16,6 +16,9 @@ instance (Functor f) => Monad (Free f) where
   Pure f >>= k = k f
   Impure fa >>= k = Impure $ fmap (>>= k) fa
 
-run :: (Monad m) => Free m a -> m a
-run (Pure a) = return a
-run (Impure fa) = fa >>= run
+runFree :: (Monad m) => Free m a -> m a
+runFree (Pure a) = return a
+runFree (Impure fa) = fa >>= runFree
+
+liftF :: (Functor f) => f a -> Free f a
+liftF = Impure . fmap Pure

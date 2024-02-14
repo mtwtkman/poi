@@ -21,7 +21,9 @@ executable poi-cli
   import:         basic
   main-is:        Main.hs
   hs-source-dirs: poi-cli
-  build-depends:  poi-core
+  build-depends:
+    , mtl
+    , poi-core
 
 test-suite poi-core-test
   import:
@@ -32,7 +34,7 @@ test-suite poi-core-test
   hs-source-dirs: test/poi-core
   type:           exitcode-stdio-1.0
   build-depends:  poi-core
-  other-modules:  Test.Poi.Control.FreeTest
+  other-modules:  Test.Poi.Control.Monad.FreeTest
 
 library poi-core
   import:          basic
@@ -48,7 +50,8 @@ library poi-core
     Poi.Action
     Poi.Action.Put
     Poi.Config
-    Poi.Control.Free
+    Poi.Control.Monad.Free
+    Poi.Control.Monad.Trans.Reader
     Poi.Entity.TrashCan
     Poi.Entity.TrashedObject
     Poi.Type.Result
