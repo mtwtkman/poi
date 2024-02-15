@@ -1,6 +1,6 @@
 module Test.Poi.Control.Monad.FreeTest (tests) where
 
-import Poi.Control.Moand.Free (Free (..), liftF)
+import Poi.Control.Monad.Free (Free (..), liftF)
 import System.Exit (exitSuccess)
 import Test.Tasty (TestTree, testGroup)
 

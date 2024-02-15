@@ -1,6 +1,7 @@
 module Main where
 
 import qualified Test.Poi.Control.Monad.FreeTest as FreeTest
+import qualified Test.Poi.Control.Monad.Trans.ReaderTest as ReaderTest
 import Test.Tasty (TestTree, defaultMain, testGroup)
 
 main :: IO ()

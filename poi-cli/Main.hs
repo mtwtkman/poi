@@ -4,6 +4,7 @@
 module Main where
 
 import Poi.Control.Monad.Free (Free (..))
+import Poi.Control.Monad.Trans.Reader (Reader, ask, runReader)
 import System.Exit (exitSuccess)
 
 data OpF a = GetLine !(String -> a) | PutStrLn !String !a | Exit
@@ -21,5 +22,9 @@ runOpIO (Impure (GetLine f)) = getLine >>= runOpIO . f
 runOpIO (Impure (PutStrLn s a)) = putStrLn s >> runOpIO a
 runOpIO (Impure Exit) = exitSuccess
 
+calculateContentLen :: Reader String Int
+calculateContentLen = do length <$> ask
+
 main :: IO ()
-main = print "hi"
+main = do
+  print (runReader calculateContentLen "hi")
