@@ -12,4 +12,5 @@ tests =
   testGroup
     "poi-core tests"
     [ FreeTest.tests
+    , ReaderTest.tests
     ]
