@@ -1,30 +1,38 @@
-{-# LANGUAGE KindSignatures #-}
-{-# LANGUAGE RankNTypes #-}
+{-# LANGUAGE FlexibleInstances #-}
 
 module Main where
 
-import Poi.Control.Monad.Free (Free (..))
 import Poi.Control.Monad.Trans.Reader (Reader, ask, runReader)
-import System.Exit (exitSuccess)
+import Prelude hiding (readFile)
+import qualified Prelude
 
-data OpF a = GetLine !(String -> a) | PutStrLn !String !a | Exit
+class (Monad m) => FSMonad m where
+  readFile :: FilePath -> m String
 
-instance Functor OpF where
-  fmap f (GetLine k) = GetLine (f . k)
-  fmap f (PutStrLn s a) = PutStrLn s (f a)
-  fmap _ Exit = Exit
+numCharactersInFile :: (FSMonad m) => FilePath -> m Int
+numCharactersInFile filename = do
+  contents <- readFile filename
+  return (length contents)
 
-type Op = Free OpF
+instance FSMonad IO where
+  readFile = Prelude.readFile
 
-runOpIO :: Op a -> IO a
-runOpIO (Pure a) = return a
-runOpIO (Impure (GetLine f)) = getLine >>= runOpIO . f
-runOpIO (Impure (PutStrLn s a)) = putStrLn s >> runOpIO a
-runOpIO (Impure Exit) = exitSuccess
+data MockFS = SingleFile !FilePath !String
 
-calculateContentLen :: Reader String Int
-calculateContentLen = do length <$> ask
+instance FSMonad (Reader MockFS) where
+  readFile fp = do
+    (SingleFile fp' contents) <- ask
+    if fp == fp'
+      then return contents
+      else error "file not found"
+
+test :: Int
+test = runReader (numCharactersInFile "test.txt") (SingleFile "test.txt" "hogehoge")
 
 main :: IO ()
 main = do
-  print (runReader calculateContentLen "hi")
+  x <- numCharactersInFile "poi-cli/README.md"
+  print $ show x
+  print $ show test
+
+-- numCharactersInFile "test.txt"

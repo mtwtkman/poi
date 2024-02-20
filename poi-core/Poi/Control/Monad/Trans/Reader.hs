@@ -17,7 +17,7 @@ ask :: Reader r r
 ask = reader id
 
 reader :: (r -> a) -> Reader r a
-reader f = f <$> ask
+reader f = Impure $ ReaderT (return . Pure . f)
 
 runReader :: Reader r a -> r -> a
 runReader (Pure a) _ = a
