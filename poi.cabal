@@ -21,9 +21,7 @@ executable poi-cli
   import:         basic
   main-is:        Main.hs
   hs-source-dirs: poi-cli
-  build-depends:
-    , mtl
-    , poi-core
+  build-depends:  poi-core
 
 test-suite poi-core-test
   import:
@@ -44,19 +42,17 @@ library poi-core
   build-depends:
     , aeson
     , directory
-    , mtl
     , time
 
   exposed-modules:
     Poi
     Poi.Action
-    Poi.Action.Monad
     Poi.Action.Put
     Poi.Config
     Poi.Control.Monad.Free
     Poi.Control.Monad.Trans.Reader
     Poi.Entity.TrashCan
     Poi.Entity.TrashedObject
+    Poi.Type.File
     Poi.Type.Result
     Poi.Type.Time
-
