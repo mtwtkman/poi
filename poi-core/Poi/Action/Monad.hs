@@ -1,6 +1,8 @@
 module Poi.Action.Monad where
 
+import Data.Time.LocalTime (LocalTime)
 import Poi.Type.Result (Result)
+import Poi.Type.Time (TimeUnit)
 
 class (Monad m) => PoiMonad m where
   moveFile :: FilePath -> FilePath -> m (Result ())
@@ -9,3 +11,5 @@ class (Monad m) => PoiMonad m where
   displayMessages :: a -> m String
   searchFile :: FilePath -> String -> m (Maybe [FilePath])
   doesExistFile :: FilePath -> m Bool
+  getCurrentLocalDateTime :: m LocalTime
+  getPastLocalDateTime :: Int -> TimeUnit -> m LocalTime

@@ -58,3 +58,5 @@ library poi-core
     Poi.Entity.TrashCan
     Poi.Entity.TrashedObject
     Poi.Type.Result
+    Poi.Type.Time
+
