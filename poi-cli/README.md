@@ -1,5 +1,3 @@
-# poi-cli
-
 `poi-cli` is a simple restorable file removing command like [trash-cli](https://github.com/andreafrancia/trash-cli).
 
 # Trash Can location
@@ -151,7 +149,7 @@ You can use this option to avoid the accidental deleting.
 
 | field | type | description | default |
 | ----- | ---- | ----------- | ------- |
-| poi-dir | string | Required a valid directory path. If a directory path didn't exist, `poi-cli` creates it automatically. | `$HOME/.poi` |
-| conflict-prefix | string | If restoring file objects conflict against original path, this value is applied as prefix. | `poi-restore_` |
+| basedir | string | Required a valid directory path. If a directory path didn't exist, `poi-cli` creates it automatically. | `$HOME/.poi` |
+| prefix | string | If restoring file objects conflict against original path, this value is applied as prefix. | `poi-restore_` |
 
 All fields are optional. This means that fields not set value are applied `default` value.
