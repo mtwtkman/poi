@@ -50,6 +50,7 @@ library poi-core
   exposed-modules:
     Poi
     Poi.Action
+    Poi.Action.Monad
     Poi.Action.Put
     Poi.Config
     Poi.Control.Monad.Free
