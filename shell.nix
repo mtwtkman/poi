@@ -19,6 +19,7 @@ mkShell {
     alias repl="cabal repl"
     alias run="cabal run --"
     alias t="cabal test --test-show-details=always --test-options='--color always'"
-    alias pack="cabal2nix --no-check . > nix/poi.nix"
+    alias pack="cabal2nix --no-check . > poi.nix"
+    alias release="pack && nix-build"
   '';
 }
