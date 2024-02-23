@@ -2,9 +2,12 @@
 
 module Main where
 
+import Control.Exception
 import Poi.Control.Monad.Trans.Reader (Reader, ask, runReader)
 import Prelude hiding (readFile)
 import qualified Prelude
+import System.Directory
+import System.IO.Error (isDoesNotExistError)
 
 class (Monad m) => FSMonad m where
   readFile :: FilePath -> m String
@@ -29,10 +32,12 @@ instance FSMonad (Reader MockFS) where
 test :: Int
 test = runReader (numCharactersInFile "test.txt") (SingleFile "test.txt" "hogehoge")
 
+
 main :: IO ()
 main = do
-  x <- numCharactersInFile "poi-cli/README.md"
-  print $ show x
-  print $ show test
-
--- numCharactersInFile "test.txt"
+  con <- (try $ renameFile "a" "aaa" :: IO (Either IOError ()))
+  case con of
+    Right x -> print $ show x
+    Left e -> do
+      if isDoesNotExistError e then print "ouch" else
+        print $ show e
