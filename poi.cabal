@@ -45,6 +45,8 @@ library poi-core
     , aeson
     , directory
     , time
+    , text
+    , vector
 
   exposed-modules:
     Poi
