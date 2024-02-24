@@ -16,6 +16,9 @@ type Reader r = Free (ReaderT r Identity)
 ask :: Reader r r
 ask = reader id
 
+local :: (r' -> r) -> Reader r a -> Reader r' a
+local f m = reader $ runReader m . f
+
 reader :: (r -> a) -> Reader r a
 reader f = Impure $ ReaderT (return . Pure . f)
 

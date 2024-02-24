@@ -21,7 +21,9 @@ executable poi-cli
   import:         basic
   main-is:        Main.hs
   hs-source-dirs: poi-cli
-  build-depends:  poi-core, directory
+  build-depends:
+    , directory
+    , poi-core
 
 test-suite poi-core-test
   import:
