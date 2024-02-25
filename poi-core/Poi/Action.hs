@@ -1,5 +1,6 @@
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE NamedFieldPuns #-}
+{-# LANGUAGE RankNTypes #-}
 
 module Poi.Action where
 
@@ -8,7 +9,7 @@ import Data.Time.LocalTime (LocalTime)
 import Data.Vector (Vector)
 import qualified Data.Vector as V
 import Poi.Control.Monad.Trans.Reader (Reader, ask)
-import Poi.Type.File (File (Directory, File))
+import Poi.Type.File (File (Directory), checkFilePath)
 import qualified Poi.Type.File as F
 import Poi.Type.Result (
   Error (PoiIOError),
@@ -16,7 +17,6 @@ import Poi.Type.Result (
   Result,
  )
 import Poi.Type.Time (TimeUnit)
-import System.Directory (renameFile)
 import qualified System.Directory as D
 import System.IO.Error (isDoesNotExistError)
 
@@ -55,25 +55,34 @@ evalPoiPure (PoiPure{poiPurePossibleException}) v = case poiPurePossibleExceptio
 instance PoiMonad (Reader PoiPure) where
   moveFile src dest = do
     env <- ask
-    hasSrc <- doesFileExist src
-    if not hasSrc then return $ Left (PoiIOError $ FileNotFound src)
-      else
+    let f = poiPureDir env
+    result <- checkFilePath f src
+
+    result' <- checkFilePath f dest
+    case result of
+      Right _ ->
         return $ evalPoiPure env ()
+      Left e -> return $ Left e
   doesFileExist name = do
     env <- ask
     return $ F.doesFileExist (poiPureDir env) name
+  deleteFile name = undefined
+
+tryRealIO :: FilePath -> IO a -> IO (Result a)
+tryRealIO target action = do
+  result <- try action
+  case result of
+    Right r -> return $ Right r
+    Left e ->
+      return $
+        Left $
+          PoiIOError
+            ( if isDoesNotExistError e
+                then FileNotFound target
+                else SomethingWrong (show e)
+            )
 
 instance PoiMonad IO where
-  moveFile src dest = do
-    result <- (try $ renameFile src dest :: IO (Either IOError ()))
-    case result of
-      Right () -> return $ Right ()
-      Left e ->
-        return $
-          Left $
-            PoiIOError
-              ( if isDoesNotExistError e
-                  then FileNotFound src
-                  else SomethingWrong (show e)
-              )
+  moveFile src dest = tryRealIO src (D.renameFile src dest)
   doesFileExist = D.doesFileExist
+  deleteFile name = tryRealIO name (D.removeFile name)
