@@ -36,7 +36,6 @@ test-suite poi-core-test
   build-depends:  poi-core
   other-modules:
     Test.Poi.Control.Monad.FreeTest
-    Test.Poi.Control.Monad.Trans.ExceptTest
     Test.Poi.Control.Monad.Trans.ReaderTest
 
 library poi-core
@@ -55,7 +54,6 @@ library poi-core
     Poi.Action.Put
     Poi.Config
     Poi.Control.Monad.Free
-    Poi.Control.Monad.Trans.Except
     Poi.Control.Monad.Trans.Reader
     Poi.Entity.TrashCan
     Poi.Entity.TrashedObject

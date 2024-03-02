@@ -2,7 +2,6 @@ module Main where
 
 import qualified Test.Poi.Control.Monad.FreeTest as FreeTest
 import qualified Test.Poi.Control.Monad.Trans.ReaderTest as ReaderTest
-import qualified Test.Poi.Control.Monad.Trans.ExceptTest as ExceptTest
 import Test.Tasty (TestTree, defaultMain, testGroup)
 
 main :: IO ()
@@ -14,5 +13,4 @@ tests =
     "poi-core tests"
     [ FreeTest.tests
     , ReaderTest.tests
-    , ExceptTest.tests
     ]

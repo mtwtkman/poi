@@ -4,10 +4,10 @@ module Main where
 
 import Control.Exception
 import Poi.Control.Monad.Trans.Reader (Reader, ask, runReader)
-import Prelude hiding (readFile)
-import qualified Prelude
 import System.Directory
 import System.IO.Error (isDoesNotExistError)
+import Prelude hiding (readFile)
+import qualified Prelude
 
 class (Monad m) => FSMonad m where
   readFile :: FilePath -> m String
@@ -32,6 +32,39 @@ instance FSMonad (Reader MockFS) where
 test :: Int
 test = runReader (numCharactersInFile "test.txt") (SingleFile "test.txt" "hogehoge")
 
+newtype X a = X a deriving (Show, Eq)
+
+xx :: (Monad m) => a -> Bool -> m (Either () a)
+xx x b
+  | b = return $ Right x
+  | otherwise = return $ Left ()
+
+instance Functor X where
+  fmap f (X a) = X (f a)
+
+instance Applicative X where
+  pure = X
+  X f <*> X a = X (f a)
+
+instance Monad X where
+  X a >>= k = k a
+
+class (Monad m) => Hoge m where
+  hoge :: m a -> Bool -> m a
+
+instance Hoge X where
+  hoge (X a) b = do
+    _ <- xx a True
+    _ <- xx a False
+    _ <- xx a b
+    return a
+
+fun :: (Monad m) => m (Either () Int)
+fun = do
+  res <- return (Right 1) >> return (Left ()) >> return (Right 10)
+  case res of
+    Right x -> return $ Right (x * 10)
+    Left () -> return $ Left ()
 
 main :: IO ()
 main = do
@@ -39,5 +72,6 @@ main = do
   case con of
     Right x -> print $ show x
     Left e -> do
-      if isDoesNotExistError e then print "ouch" else
-        print $ show e
+      if isDoesNotExistError e
+        then print "ouch"
+        else print $ show e
