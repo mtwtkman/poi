@@ -33,8 +33,14 @@ test-suite poi-core-test
   main-is:        tests.hs
   hs-source-dirs: test/poi-core
   type:           exitcode-stdio-1.0
-  build-depends:  poi-core
+  build-depends:
+    , poi-core
+    , time
+    , vector
+
   other-modules:
+    Test.Poi.ActionTest
+    Test.Poi.Arbitrary
     Test.Poi.Control.Monad.FreeTest
     Test.Poi.Control.Monad.Trans.ReaderTest
 

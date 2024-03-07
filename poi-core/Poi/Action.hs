@@ -5,7 +5,7 @@
 module Poi.Action where
 
 import Control.Exception (try)
-import Data.Time.LocalTime (LocalTime)
+import Data.Time (UTCTime)
 import Data.Vector (Vector)
 import qualified Data.Vector as V
 import Poi.Control.Monad.Trans.Reader (Reader, ask)
@@ -16,7 +16,6 @@ import Poi.Type.Result (
   PoiIOError (FileNotFound, SomethingWrong),
   Result,
  )
-import Poi.Type.Time (TimeUnit)
 import qualified System.Directory as D
 import System.IO.Error (isDoesNotExistError)
 
@@ -28,18 +27,15 @@ class (Monad m) => PoiMonad m where
   searchFile :: FilePath -> String -> m (Maybe (Vector FilePath))
   doesFileExist :: FilePath -> m Bool
 
-  getCurrentLocalDateTime :: m LocalTime
-  getPastLocalDateTime :: Int -> TimeUnit -> m LocalTime
-
 data PoiPure = PoiPure
   { poiPureDir :: !File
-  , poiPureCurrentLocalDateTime :: !LocalTime
+  , poiPureCurrentLocalDateTime :: !UTCTime
   , poiPureConsoleBuffer :: !(Maybe String)
   , poiPurePossibleException :: !(Maybe Error)
   }
   deriving (Show, Eq)
 
-initialPoiEnv :: FilePath -> LocalTime -> PoiPure
+initialPoiEnv :: FilePath -> UTCTime -> PoiPure
 initialPoiEnv p t =
   PoiPure
     (Directory p V.empty)
@@ -57,16 +53,16 @@ instance PoiMonad (Reader PoiPure) where
     env <- ask
     let f = poiPureDir env
     result <- checkFilePath f src
-
-    result' <- checkFilePath f dest
     case result of
-      Right _ ->
-        return $ evalPoiPure env ()
+      Right _ -> do
+        result' <- checkFilePath f dest
+        case result' of
+          Right _ -> return $ evalPoiPure env ()
+          Left e -> return $ Left e
       Left e -> return $ Left e
   doesFileExist name = do
     env <- ask
     return $ F.doesFileExist (poiPureDir env) name
-  deleteFile name = undefined
 
 tryRealIO :: FilePath -> IO a -> IO (Result a)
 tryRealIO target action = do
