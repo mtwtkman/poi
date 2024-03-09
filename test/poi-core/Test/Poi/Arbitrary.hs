@@ -3,13 +3,13 @@
 module Test.Poi.Arbitrary where
 
 import Poi.Action (PoiPure (PoiPure))
+import Poi.Type.File (File (File))
 import Poi.Type.Result (
   ActionError (DeleteError, ListUpError, RestoreError),
   Error,
   PoiIOError (FileNotFound, InvalidFilePath, SomethingWrong),
  )
 import Test.QuickCheck (Arbitrary (arbitrary), oneof)
-import Poi.Type.File (File (File))
 import Test.QuickCheck.Instances ()
 
 instance Arbitrary PoiIOError where
