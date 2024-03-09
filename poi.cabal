@@ -16,6 +16,7 @@ common test-basic
     , QuickCheck
     , tasty
     , tasty-quickcheck
+    , quickcheck-instances
 
 executable poi-cli
   import:         basic
