@@ -52,14 +52,12 @@ instance PoiMonad (Reader PoiPure) where
   moveFile src dest = do
     env <- ask
     let f = poiPureDir env
-    result <- checkFilePath f src
-    case result of
-      Right _ -> do
-        result' <- checkFilePath f dest
-        case result' of
-          Right _ -> return $ evalPoiPure env ()
-          Left e -> return $ Left e
-      Left e -> return $ Left e
+    hasSrc <- checkFilePath f src
+    hasDest <- checkFilePath f dest
+    case (hasSrc, hasDest) of
+      (Right (), Right ()) -> return $ evalPoiPure env ()
+      (Left e, _) -> return $ Left e
+      (_, Left e) -> return $ Left e
   doesFileExist name = do
     env <- ask
     return $ F.doesFileExist (poiPureDir env) name
