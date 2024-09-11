@@ -1,0 +1,78 @@
+cabal-version:   3.0
+name:            poi
+version:         0.1.0.0
+license:
+author:          mtwtkman
+maintainer:      924277+mtwtkman@users.noreply.github.com
+build-type:      Simple
+extra-doc-files: CHANGELOG.md
+
+common warnings
+  ghc-options: -Wall
+
+common deps
+  build-depends:
+    , base
+    , containers
+    , directory
+    , filepath
+    , regex
+    , time
+    , uuid
+
+executable poi
+  import:           warnings
+  main-is:          Main.hs
+  build-depends:
+    , base
+    , poi
+
+  hs-source-dirs:   app
+  default-language: Haskell2010
+
+library
+  import:          warnings, deps
+  hs-source-dirs:  src
+  build-depends:
+    , optparse-applicative
+    , safe
+
+  exposed-modules:
+    Poi.Action
+    Poi.Cli
+    Poi.Display
+    Poi.Entity
+    Poi.File.IO
+    Poi.File.Parser
+    Poi.Internal.Debug
+    Poi.Prompt
+    Poi.Time
+
+test-suite test
+  import:           warnings, deps
+  type:             exitcode-stdio-1.0
+  main-is:          tests.hs
+  hs-source-dirs:   test
+  build-depends:
+    , HUnit
+    , poi
+    , QuickCheck
+    , random
+    , tasty
+    , tasty-hunit
+    , tasty-quickcheck
+    , temporary
+
+  other-modules:
+    Poi.Test.Arbitrary
+    Poi.Test.E2E
+    Poi.Test.E2E.Action
+    Poi.Test.E2E.File
+    Poi.Test.E2E.File.IO
+    Poi.Test.E2E.Util
+    Poi.Test.Fixture
+    Poi.Test.Fixture.SrcData
+    Poi.Test.Fixture.TrashedData
+    Poi.Test.Util
+
+  default-language: Haskell2010

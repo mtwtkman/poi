@@ -1,0 +1,8 @@
+cradle:
+  cabal:
+    - path: "./src"
+      component: "lib:poi"
+    - path: "./app"
+      component: "exe:poi"
+    - path: "./test"
+      component: "test:test"
