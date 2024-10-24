@@ -1,6 +1,7 @@
 module Poi.Cli (execPoiParser) where
 
 import Options.Applicative (
+  Alternative (some),
   Parser,
   ParserInfo,
   argument,
@@ -18,21 +19,22 @@ import Options.Applicative (
   option,
   progDesc,
   short,
+  str,
   (<**>),
-  (<|>), str, Alternative (some),
+  (<|>),
  )
 import Poi.Action (PoiAction (..))
 
 data BuryOption
   = BuryAll
   | BuryDayBefore Int
-  | BuryIndex Int
+  | BuryIndex [Int]
   deriving (Show, Eq)
 
 data PoiCommand
   = ListUpCommand
   | TossCommand [FilePath]
-  | PickUpCommand Int
+  | PickUpCommand [Int]
   | BuryCommand BuryOption
   deriving (Show, Eq)
 
@@ -42,14 +44,17 @@ listUpParser = pure ListUpCommand
 tossParser :: Parser PoiCommand
 tossParser =
   TossCommand
-    <$> some (argument str
-      ( metavar "TARGET ..."
-          <> help "Files for trashing."
-      ))
+    <$> some
+      ( argument
+          str
+          ( metavar "TARGET ..."
+              <> help "Files for trashing."
+          )
+      )
 
 pickUpParser :: Parser PoiCommand
 pickUpParser =
-  PickUpCommand <$> argument auto (metavar "INDEX")
+  PickUpCommand <$> some (argument auto (metavar "INDEX..."))
 
 buryParser :: Parser PoiCommand
 buryParser = BuryCommand <$> (empty' <|> dayBefore <|> index)
@@ -61,7 +66,7 @@ buryParser = BuryCommand <$> (empty' <|> dayBefore <|> index)
   dayBefore = BuryDayBefore <$> option auto (long "day" <> short 'd' <> metavar "DAY")
 
   index :: Parser BuryOption
-  index = BuryIndex <$> option auto (long "index" <> short 'i' <> metavar "INDEX")
+  index = BuryIndex <$> some (option auto (long "index" <> short 'i' <> metavar "INDEX"))
 
 poiParser :: Parser PoiCommand
 poiParser =

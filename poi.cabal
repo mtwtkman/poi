@@ -1,44 +1,45 @@
-cabal-version:   3.0
-name:            poi
-version:         0.1.0.0
+cabal-version: 3.0
+name: poi
+version: 0.1.0.0
 license:
-author:          mtwtkman
-maintainer:      924277+mtwtkman@users.noreply.github.com
-build-type:      Simple
-extra-doc-files: CHANGELOG.md
+author: mtwtkman
+maintainer: 924277+mtwtkman@users.noreply.github.com
+build-type: Simple
 
 common warnings
   ghc-options: -Wall
 
 common deps
   build-depends:
-    , base
-    , containers
-    , directory
-    , filepath
-    , regex
-    , time
-    , uuid
+    base,
+    containers,
+    directory,
+    filepath,
+    regex,
+    time,
+    uuid,
 
 executable poi
-  import:           warnings
-  main-is:          Main.hs
+  import: warnings
+  main-is: Main.hs
   build-depends:
-    , base
-    , poi
+    base,
+    poi,
 
-  hs-source-dirs:   app
+  hs-source-dirs: app
   default-language: Haskell2010
 
 library
-  import:          warnings, deps
-  hs-source-dirs:  src
+  import: warnings, deps
+  hs-source-dirs: src
   build-depends:
-    , optparse-applicative
-    , safe
+    aeson,
+    optparse-applicative,
+    safe,
 
   exposed-modules:
     Poi.Action
+    Poi.Api.Json
     Poi.Cli
     Poi.Display
     Poi.Entity
@@ -49,19 +50,19 @@ library
     Poi.Time
 
 test-suite test
-  import:           warnings, deps
-  type:             exitcode-stdio-1.0
-  main-is:          tests.hs
-  hs-source-dirs:   test
+  import: warnings, deps
+  type: exitcode-stdio-1.0
+  main-is: tests.hs
+  hs-source-dirs: test
   build-depends:
-    , HUnit
-    , poi
-    , QuickCheck
-    , random
-    , tasty
-    , tasty-hunit
-    , tasty-quickcheck
-    , temporary
+    HUnit,
+    QuickCheck,
+    poi,
+    random,
+    tasty,
+    tasty-hunit,
+    tasty-quickcheck,
+    temporary,
 
   other-modules:
     Poi.Test.Arbitrary

@@ -3,13 +3,14 @@
 module Main where
 
 import Control.Monad (forM_)
+import Data.List (intercalate)
 import Poi.Action (
   PoiAction (..),
+  deleteTrashByIndices,
   deleteTrashesByDayBefore,
-  deleteTrashByIndex,
   emptyTrashCan,
   listUp,
-  pickUpByIndex,
+  pickUpByIndices,
   toss,
  )
 import Poi.Cli (execPoiParser)
@@ -58,10 +59,10 @@ main = do
     Toss ps -> do
       tossed <- toss can ps
       forM_ tossed (putStrLn . ("tossed " <>) . makeFullPath)
-    PickUpByIndex i -> do
-      result <- pickUpByIndex can (i - 1)
+    PickUpByIndex is -> do
+      result <- pickUpByIndices can (map (+ negate 1) is)
       case result of
-        Right picked -> putStrLn $ "picked up: " <> picked
+        Right picked -> putStrLn $ "picked up: " <> intercalate "," picked
         Left e -> putStrLn $ "failed by " <> show e
     EmptyTrashCan -> doEmptyTrashCan can
     DeleteDayBefore d -> do
@@ -70,8 +71,8 @@ main = do
       case result of
         Right ts -> putStrLn $ "Deleted" <> show (length ts) <> "files permanently."
         Left e -> print e
-    DeleteByIndex i -> do
-      result <- deleteTrashByIndex can i
+    DeleteByIndex is -> do
+      result <- deleteTrashByIndices can is
       case result of
-        Right t -> putStrLn ("Deleted " <> makeFullPath t)
+        Right t -> putStrLn ("Deleted " <> intercalate "," (map makeFullPath t))
         Left e -> print e

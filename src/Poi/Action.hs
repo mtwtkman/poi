@@ -1,3 +1,5 @@
+{-# LANGUAGE RankNTypes #-}
+
 module Poi.Action (
   PoiAction (..),
   PoiActionResult,
@@ -12,6 +14,8 @@ module Poi.Action (
   deleteTrashesByDayBefore,
   deleteTrashByIndex,
   duplicationSafeName,
+  deleteTrashByIndices,
+  pickUpByIndices,
 ) where
 
 import Control.Monad (forM_, when)
@@ -68,10 +72,10 @@ data PoiBuryError
 data PoiAction
   = ListUp
   | Toss [FilePath]
-  | PickUpByIndex Int
+  | PickUpByIndex [Int]
   | EmptyTrashCan
   | DeleteDayBefore Int
-  | DeleteByIndex Int
+  | DeleteByIndex [Int]
   deriving (Show, Eq)
 
 type PoiActionResult a = Either PoiActionError a
@@ -107,6 +111,16 @@ toss l fs = withTrashCan l $ trashToCan l fs
 
 type IndexSpecified a = TrashCanLocation -> Int -> IO (PoiActionResult a)
 
+withIndices :: TrashCanLocation -> [Int] -> IndexSpecified a -> IO (PoiActionResult [a])
+withIndices can is proc = foldrM f (Right []) is
+ where
+  f _ acc@(Left _) = return acc
+  f i (Right ps) = do
+    result <- proc can i
+    case result of
+      Right p -> return $ Right (p : ps)
+      Left e -> return $ Left e
+
 duplicationSafeName :: String -> String
 duplicationSafeName = (".poi.pickup." <>)
 
@@ -131,6 +145,9 @@ pickUpByIndex can i =
         return dest
     )
 
+pickUpByIndices :: TrashCanLocation -> [Int] -> IO (PoiActionResult [FilePath])
+pickUpByIndices can is = withIndices can is pickUpByIndex
+
 emptyTrashCan :: TrashCanLocation -> IO Int
 emptyTrashCan (TrashCanLocation can) = do
   listDirectory can >>= foldrM (\d acc -> removeDirectoryRecursive (joinPath [can, d]) >> return (1 + acc)) 0
@@ -142,6 +159,9 @@ deleteTrashByIndex can i =
     i
     (\t -> removeDirectoryRecursive (buildTrashIdPath can t) >> deleteEmptyTrashedAtPath can t >> return t)
 
+deleteTrashByIndices :: TrashCanLocation -> [Int] -> IO (PoiActionResult [Trash])
+deleteTrashByIndices can is = withIndices can is deleteTrashByIndex
+
 filterByTrashedAt :: (LocalTime, LocalTime) -> TrashCan -> TrashCan
 filterByTrashedAt (s, e) (TrashCan trashes) = TrashCan $ S.filter (\(Trash{trashedAt = t}) -> t >= s && t <= e) trashes
 
@@ -149,12 +169,12 @@ deleteTrashesByDayBefore :: TrashCanLocation -> LocalTime -> Int -> IO (PoiActio
 deleteTrashesByDayBefore can baseDate dayBefore
   | dayBefore < 0 = return $ Left (PoiBuryError BeforeDayMustBeZeroOrPositive)
   | otherwise = do
-  trashes <- digTrashCan can
-  let TrashCan targets =
-        filterByTrashedAt
-          ( LocalTime (fromGregorian 1970 1 1) (TimeOfDay 0 0 0)
-          , addLocalTime (negate $ nominalDay * secondsToNominalDiffTime (fromInteger $ toInteger dayBefore)) baseDate
-          )
-          trashes
-  forM_ (S.toList targets) (deleteTrash can)
-  return $ Right targets
+      trashes <- digTrashCan can
+      let TrashCan targets =
+            filterByTrashedAt
+              ( LocalTime (fromGregorian 1970 1 1) (TimeOfDay 0 0 0)
+              , addLocalTime (negate $ nominalDay * secondsToNominalDiffTime (fromInteger $ toInteger dayBefore)) baseDate
+              )
+              trashes
+      forM_ (S.toList targets) (deleteTrash can)
+      return $ Right targets
