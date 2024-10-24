@@ -18,9 +18,8 @@ import Options.Applicative (
   option,
   progDesc,
   short,
-  strArgument,
   (<**>),
-  (<|>),
+  (<|>), str, Alternative (some),
  )
 import Poi.Action (PoiAction (..))
 
@@ -32,7 +31,7 @@ data BuryOption
 
 data PoiCommand
   = ListUpCommand
-  | TossCommand FilePath
+  | TossCommand [FilePath]
   | PickUpCommand Int
   | BuryCommand BuryOption
   deriving (Show, Eq)
@@ -43,10 +42,10 @@ listUpParser = pure ListUpCommand
 tossParser :: Parser PoiCommand
 tossParser =
   TossCommand
-    <$> strArgument
-      ( metavar "TARGET"
-          <> help "Trash the file."
-      )
+    <$> some (argument str
+      ( metavar "TARGET ..."
+          <> help "Files for trashing."
+      ))
 
 pickUpParser :: Parser PoiCommand
 pickUpParser =

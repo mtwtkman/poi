@@ -67,7 +67,7 @@ data PoiBuryError
 
 data PoiAction
   = ListUp
-  | Toss FilePath
+  | Toss [FilePath]
   | PickUpByIndex Int
   | EmptyTrashCan
   | DeleteDayBefore Int

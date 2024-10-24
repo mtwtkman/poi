@@ -55,8 +55,8 @@ main = do
           putStrLn "Empty."
         else
           putStr $ unlines $ formatTrashCan items
-    Toss p -> do
-      tossed <- toss can [p]
+    Toss ps -> do
+      tossed <- toss can ps
       forM_ tossed (putStrLn . ("tossed " <>) . makeFullPath)
     PickUpByIndex i -> do
       result <- pickUpByIndex can (i - 1)
