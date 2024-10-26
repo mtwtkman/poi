@@ -39,7 +39,6 @@ library
 
   exposed-modules:
     Poi.Action
-    Poi.Api.Json
     Poi.Cli
     Poi.Display
     Poi.Entity
