@@ -22,7 +22,14 @@ import Control.Monad (forM_, when)
 import Data.Foldable (foldrM)
 import Data.Functor ((<&>))
 import qualified Data.Set as S
-import Data.Time (LocalTime (LocalTime), TimeOfDay (TimeOfDay), addLocalTime, fromGregorian, nominalDay, secondsToNominalDiffTime)
+import Data.Time (
+  LocalTime (LocalTime),
+  TimeOfDay (TimeOfDay),
+  addLocalTime,
+  fromGregorian,
+  nominalDay,
+  secondsToNominalDiffTime,
+ )
 import qualified Data.UUID as U
 import Poi.Display (makeFullPath)
 import Poi.Entity (
