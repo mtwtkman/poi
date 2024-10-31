@@ -17,7 +17,7 @@ import Poi.Cli (execPoiParser)
 import Poi.Display (formatTrashCan, makeFullPath)
 import Poi.Entity (
   OrderedTrashCan (OrderedTrashCan),
-  TrashCanLocation (TrashCanLocation),
+  TrashCanLocation (TrashCanLocation), SortOrder (Desc),
  )
 import Poi.File.IO (findTrashCanLocation)
 import Poi.Prompt (PoiPromptError (InvalidInput), YN (No, Yes), confirm)
@@ -48,17 +48,22 @@ main = do
   can <- findTrashCanLocation
   case action of
     ListUp -> do
-      OrderedTrashCan items <- listUp can
-      let (TrashCanLocation canS) = can
-      putStrLn $ "=== POI Trash Can: " <> canS <> " ==="
-      if null items
-        then
-          putStrLn "Empty."
-        else
-          putStr $ unlines $ formatTrashCan items
+      result <- listUp Desc can
+      case result of
+        Right (OrderedTrashCan items) -> do
+          let (TrashCanLocation canS) = can
+          putStrLn $ "=== POI Trash Can: " <> canS <> " ==="
+          if null items
+            then
+              putStrLn "Empty."
+            else
+              putStr $ unlines $ formatTrashCan items
+        Left e -> print e
     Toss ps -> do
       tossed <- toss can ps
-      forM_ tossed (putStrLn . ("tossed " <>) . makeFullPath)
+      case tossed of
+        Right ts -> forM_ ts (putStrLn . ("tossed " <>) . makeFullPath)
+        Left e -> print e
     PickUpByIndex is -> do
       result <- pickUpByIndices can (map (+ negate 1) is)
       case result of

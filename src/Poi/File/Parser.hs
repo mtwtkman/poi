@@ -40,7 +40,7 @@ parseTrashedFilePath can trashedAtString = do
   makeTrash :: String -> LocalTime -> TrashedAtPath -> IO Trash
   makeTrash fid t trashedAtPath =
     case U.fromString fid of
-      Nothing -> error "invalid uuid"
+      Nothing -> ioError $ userError "invalid uuid"
       Just fid' -> do
         let container = joinPath [trashedAtPath, fid]
         p <- readFile $ joinPath [container, parentFileName]

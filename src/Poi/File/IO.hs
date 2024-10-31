@@ -11,7 +11,6 @@ module Poi.File.IO (
 
 import Data.Foldable (foldrM)
 import Data.Functor ((<&>))
-import Data.Maybe (fromMaybe)
 import qualified Data.Set as S
 import Data.Time (
   getCurrentTime,
@@ -53,7 +52,7 @@ findTrashCanLocation = do
       e <- doesDirectoryExist l
       if e
         then TrashCanLocation <$> makeAbsolute l
-        else error (l <> " NOT EXIST")
+        else ioError $ userError (l <> " NOT EXIST")
     _ -> getHomeDirectory <&> TrashCanLocation . flip (<>) defaultPoiTrashCanName
 
 doesTrashCanExist :: TrashCanLocation -> IO Bool
@@ -74,7 +73,7 @@ oneTrashToCan can src = do
   absSrc <- makeAbsolute src
   fx <- doesPathExist absSrc
   if not fx
-    then error "File does not exist"
+    then ioError (userError "FileNotExist")
     else do
       tz <- getCurrentTimeZone
       utc <- getCurrentTime
@@ -84,11 +83,13 @@ oneTrashToCan can src = do
           container = joinPath [trashedAtPath, U.toString fid]
           srcParent = takeDirectory absSrc
           trashDest = joinPath [container, trashContainerName]
-          srcName = fromMaybe (error "Cannot detect file") (lastMay (splitPath absSrc))
-      createDirectoryIfMissing True trashDest
-      saveParentLocation container srcParent
-      renamePath absSrc (joinPath [trashDest, srcName])
-      return $ Trash absSrc srcParent fid current
+      case lastMay (splitPath absSrc) of
+        Just srcName -> do
+          createDirectoryIfMissing True trashDest
+          saveParentLocation container srcParent
+          renamePath absSrc (joinPath [trashDest, srcName])
+          return $ Trash absSrc srcParent fid current
+        Nothing -> ioError $ userError "Cannot detect file"
 
 trashToCan :: TrashCanLocation -> [FilePath] -> IO [Trash]
 trashToCan can = mapM (oneTrashToCan can)
