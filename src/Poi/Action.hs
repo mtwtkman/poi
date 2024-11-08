@@ -18,11 +18,19 @@ module Poi.Action (
   pickUpByIndices,
 ) where
 
+import Control.Exception (try)
 import Control.Monad (forM_, when)
 import Data.Foldable (foldrM)
 import Data.Functor ((<&>))
 import qualified Data.Set as S
-import Data.Time (LocalTime (LocalTime), TimeOfDay (TimeOfDay), addLocalTime, fromGregorian, nominalDay, secondsToNominalDiffTime)
+import Data.Time (
+  LocalTime (LocalTime),
+  TimeOfDay (TimeOfDay),
+  addLocalTime,
+  fromGregorian,
+  nominalDay,
+  secondsToNominalDiffTime,
+ )
 import qualified Data.UUID as U
 import Poi.Display (makeFullPath)
 import Poi.Entity (
@@ -56,10 +64,12 @@ import System.FilePath (joinPath)
 data PoiActionError
   = CommonError PoiCommonError
   | PoiBuryError PoiBuryError
+  | FileIOError IOError
   deriving (Show, Eq)
 
 data PoiCommonError
   = FileNotFound
+  | TrashCanNotFound
   | IndexMustBePositive
   | IndexOverFlow
   deriving (Show, Eq)
@@ -80,12 +90,12 @@ data PoiAction
 
 type PoiActionResult a = Either PoiActionError a
 
-withTrashCan :: TrashCanLocation -> IO a -> IO a
+withTrashCan :: TrashCanLocation -> (TrashCanLocation -> IO (PoiActionResult a)) -> IO (PoiActionResult a)
 withTrashCan l a = do
   e <- doesTrashCanExist l
   if e
-    then a
-    else error "out"
+    then a l
+    else return (Left $ CommonError TrashCanNotFound)
 
 deleteEmptyTrashedAtPath :: TrashCanLocation -> Trash -> IO Bool
 deleteEmptyTrashedAtPath can t = do
@@ -95,19 +105,25 @@ deleteEmptyTrashedAtPath can t = do
   return needToClean
 
 withIndex :: TrashCanLocation -> Int -> (Trash -> IO a) -> IO (PoiActionResult a)
-withIndex can i f
+withIndex l i f
   | i < 0 = return $ Left (CommonError IndexMustBePositive)
-  | otherwise = withTrashCan can $ do
-      OrderedTrashCan items <- listUp can
+  | otherwise = withTrashCan l $ \can -> do
+      OrderedTrashCan items <- digTrashCan can <&> sortTrashes Desc
       case atMay items i of
         Just item -> f item <&> Right
         Nothing -> return $ Left (CommonError IndexOverFlow)
 
-listUp :: TrashCanLocation -> IO OrderedTrashCan
-listUp l = withTrashCan l $ digTrashCan l <&> sortTrashes Desc
+listUp :: SortOrder -> TrashCanLocation -> IO (PoiActionResult OrderedTrashCan)
+listUp s l = withTrashCan l $ \loc -> do
+  ordered <- digTrashCan loc <&> sortTrashes s
+  return $ Right ordered
 
-toss :: TrashCanLocation -> [FilePath] -> IO [Trash]
-toss l fs = withTrashCan l $ trashToCan l fs
+toss :: TrashCanLocation -> [FilePath] -> IO (PoiActionResult [Trash])
+toss l fs = do
+  res <- try (trashToCan l fs)
+  case res of
+    Right v -> return $ Right v
+    Left e -> return $ Left (FileIOError e)
 
 type IndexSpecified a = TrashCanLocation -> Int -> IO (PoiActionResult a)
 

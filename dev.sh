@@ -8,5 +8,15 @@ case "${cmd}" in
   t|test) cabal test --test-show-details=always --test-options="--color always $@";;
   tp) ./dev.sh t "-p \"/$@/\"";;
   poi) POI_TRASH_CAN_PATH=`pwd`/test-poi-can cabal run poi $@;;
+  release)
+    exedir="exe"
+    dest="${exedir}/poi"
+    if [ ! -d "${exedir}" ]; then
+      mkdir "${exedir}"
+    fi
+    cabal build &> /dev/null
+    cp "$(cabal list-bin poi)" "${dest}"
+    chmod +x "${dest}"
+    ;;
   *) cabal $@;;
 esac
