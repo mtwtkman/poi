@@ -9,14 +9,15 @@ case "${cmd}" in
   tp) ./dev.sh t "-p \"/$@/\"";;
   poi) POI_TRASH_CAN_PATH=`pwd`/test-poi-can cabal run poi $@;;
   release)
-    exedir="exe"
-    dest="${exedir}/poi"
-    if [ ! -d "${exedir}" ]; then
-      mkdir "${exedir}"
+    destdir="dest"
+    out="${destdir}/poi"
+    if [ ! -d "${destdir}" ]; then
+      mkdir "${destdir}"
     fi
-    cabal build &> /dev/null
-    cp "$(cabal list-bin poi)" "${dest}"
-    chmod +x "${dest}"
+    cabal build
+    cp "$(cabal list-bin poi)" "${out}"
+    chmod +x "${out}"
+    echo "Generated '${out}'"
     ;;
   *) cabal $@;;
 esac
