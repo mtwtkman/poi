@@ -4,9 +4,10 @@ module Main where
 
 import Control.Monad (forM_)
 import Data.List (intercalate)
+import GHC.IO.Exception (ExitCode (ExitFailure))
 import Poi.Action (
   PoiAction (..),
-  PoiActionError (CommonError, PoiBuryError, FileIOError),
+  PoiActionError (CommonError, FileIOError, PoiBuryError),
   PoiBuryError (BeforeDayMustBeZeroOrPositive, FilePathNotExist),
   PoiCommonError (FileNotFound, IndexMustBePositive, IndexOverFlow, TrashCanNotFound),
   deleteTrashByIndices,
@@ -26,6 +27,7 @@ import Poi.Entity (
 import Poi.File.IO (findTrashCanLocation)
 import Poi.Prompt (PoiPromptError (InvalidInput), YN (No, Yes), confirm)
 import Poi.Time (getCurrent)
+import System.Exit (exitWith)
 
 doEmptyTrashCan :: TrashCanLocation -> IO ()
 doEmptyTrashCan can = do
@@ -57,9 +59,12 @@ buryErrorMsg FilePathNotExist = "File path not exist."
 buryErrorMsg BeforeDayMustBeZeroOrPositive = "Before day option must be zero or positive number."
 
 showErrorMsg :: PoiActionError -> IO ()
-showErrorMsg (CommonError e) = putStrLn $ commonErrorMsg e
-showErrorMsg (PoiBuryError e) = putStrLn $ buryErrorMsg e
-showErrorMsg (FileIOError e) = print e
+showErrorMsg e = do
+  case e of
+    CommonError e' -> putStrLn $ commonErrorMsg e'
+    PoiBuryError e' -> putStrLn $ buryErrorMsg e'
+    FileIOError e' -> print e'
+  exitWith (ExitFailure 1)
 
 main :: IO ()
 main = do
