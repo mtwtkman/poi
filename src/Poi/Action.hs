@@ -32,6 +32,7 @@ import Data.Time (
   secondsToNominalDiffTime,
  )
 import qualified Data.UUID as U
+import Poi.Abnormal (PoiAbnormal)
 import Poi.Display (makeFullPath)
 import Poi.Entity (
   OrderedTrashCan (OrderedTrashCan),
@@ -64,12 +65,14 @@ import System.FilePath (joinPath)
 data PoiActionError
   = CommonError PoiCommonError
   | PoiBuryError PoiBuryError
-  | FileIOError IOError
+  | PoiTossError IOError
   deriving (Show, Eq)
+
+instance PoiAbnormal PoiActionError
 
 data PoiCommonError
   = FileNotFound
-  | TrashCanNotFound
+  | TrashCanNotFound TrashCanLocation
   | IndexMustBePositive
   | IndexOverFlow
   deriving (Show, Eq)
@@ -95,7 +98,7 @@ withTrashCan l a = do
   e <- doesTrashCanExist l
   if e
     then a l
-    else return (Left $ CommonError TrashCanNotFound)
+    else return (Left $ CommonError (TrashCanNotFound l))
 
 deleteEmptyTrashedAtPath :: TrashCanLocation -> Trash -> IO Bool
 deleteEmptyTrashedAtPath can t = do
@@ -123,7 +126,7 @@ toss l fs = do
   res <- try (trashToCan l fs)
   case res of
     Right v -> return $ Right v
-    Left e -> return $ Left (FileIOError e)
+    Left e -> return $ Left (PoiTossError e)
 
 type IndexSpecified a = TrashCanLocation -> Int -> IO (PoiActionResult a)
 

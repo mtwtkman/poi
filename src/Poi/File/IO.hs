@@ -7,6 +7,8 @@ module Poi.File.IO (
   saveParentLocation,
   doesEmptyDirectory,
   deleteTrash,
+  createTrashCanDirectory,
+  FileIOError(..),
 ) where
 
 import Data.Foldable (foldrM)
@@ -19,6 +21,7 @@ import Data.Time (
  )
 import qualified Data.UUID as U
 import qualified Data.UUID.V4 as U
+import Poi.Abnormal (PoiAbnormal)
 import Poi.Entity (
   Trash (..),
   TrashCan (TrashCan),
@@ -44,16 +47,20 @@ import System.Directory (
 import System.Environment (lookupEnv)
 import System.FilePath (joinPath, splitPath, takeDirectory)
 
-findTrashCanLocation :: IO TrashCanLocation
+newtype FileIOError = FilePathNotFound FilePath
+  deriving (Show)
+instance PoiAbnormal FileIOError
+
+findTrashCanLocation :: IO (Either FileIOError TrashCanLocation)
 findTrashCanLocation = do
-  userSpecified <- lookupEnv "POI_TRASH_CAN_PATH"
-  case userSpecified of
+  p <- lookupEnv "POI_TRASH_CAN_PATH"
+  case p of
     Just l@(_ : _) -> do
       e <- doesDirectoryExist l
       if e
-        then TrashCanLocation <$> makeAbsolute l
-        else ioError $ userError (l <> " NOT EXIST")
-    _ -> getHomeDirectory <&> TrashCanLocation . flip (<>) defaultPoiTrashCanName
+        then makeAbsolute l <&> Right . TrashCanLocation
+        else return $ Left (FilePathNotFound l)
+    _ -> getHomeDirectory <&> Right . TrashCanLocation . flip (<>) defaultPoiTrashCanName
 
 doesTrashCanExist :: TrashCanLocation -> IO Bool
 doesTrashCanExist (TrashCanLocation p) = doesDirectoryExist p
@@ -99,3 +106,6 @@ doesEmptyDirectory p = listDirectory p <&> null
 
 deleteTrash :: TrashCanLocation -> Trash -> IO ()
 deleteTrash can (Trash{trashedAt = t}) = removeDirectoryRecursive (buildTrashedAtPath can t)
+
+createTrashCanDirectory :: TrashCanLocation -> IO ()
+createTrashCanDirectory l = createDirectoryIfMissing True (show l)

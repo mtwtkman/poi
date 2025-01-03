@@ -43,7 +43,10 @@ newtype TrashCan = TrashCan
   deriving (Show, Eq, Ord)
 
 newtype TrashCanLocation = TrashCanLocation String
-  deriving (Show, Eq)
+  deriving (Eq)
+
+instance Show TrashCanLocation where
+  show (TrashCanLocation s) = s
 
 newtype TimeRecord = TimeRecord LocalTime
   deriving (Show)

@@ -10,11 +10,14 @@ import Data.Char (toLower)
 import Data.Functor ((<&>))
 import GHC.IO.Handle (hFlush)
 import System.IO (stdout)
+import Poi.Abnormal (PoiAbnormal)
 
 prompt :: String -> Char -> (String -> a) -> IO a
 prompt p delimiter conv = putStr (p <> [delimiter, ' ']) >> hFlush stdout >> getLine <&> conv
 
 data PoiPromptError = InvalidInput deriving (Show, Eq)
+
+instance PoiAbnormal PoiPromptError
 
 type PoiPromptResult a = Either PoiPromptError a
 
