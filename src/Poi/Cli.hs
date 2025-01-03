@@ -10,6 +10,7 @@ import Options.Applicative (
   execParser,
   flag',
   fullDesc,
+  header,
   help,
   helper,
   hsubparser,
@@ -78,7 +79,7 @@ poiParser =
     )
 
 opts :: ParserInfo PoiCommand
-opts = info (poiParser <**> helper) fullDesc
+opts = info (poiParser <**> helper) (fullDesc <> header "poi - Safety garbages management application")
 
 execPoiParser :: IO PoiAction
 execPoiParser = detectAction =<< execParser opts
