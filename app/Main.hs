@@ -6,6 +6,9 @@ import Control.Monad (forM_)
 import Data.List (intercalate)
 import Poi.Action (
   PoiAction (..),
+  PoiActionError (CommonError, PoiBuryError, FileIOError),
+  PoiBuryError (BeforeDayMustBeZeroOrPositive, FilePathNotExist),
+  PoiCommonError (FileNotFound, IndexMustBePositive, IndexOverFlow, TrashCanNotFound),
   deleteTrashByIndices,
   deleteTrashesByDayBefore,
   emptyTrashCan,
@@ -17,7 +20,8 @@ import Poi.Cli (execPoiParser)
 import Poi.Display (formatTrashCan, makeFullPath)
 import Poi.Entity (
   OrderedTrashCan (OrderedTrashCan),
-  TrashCanLocation (TrashCanLocation), SortOrder (Desc),
+  SortOrder (Desc),
+  TrashCanLocation (TrashCanLocation),
  )
 import Poi.File.IO (findTrashCanLocation)
 import Poi.Prompt (PoiPromptError (InvalidInput), YN (No, Yes), confirm)
@@ -42,6 +46,21 @@ doEmptyTrashCan can = do
       putStrLn "Invalid value. Please input `Y(es)` or `N(o)`"
       doEmptyTrashCan can
 
+commonErrorMsg :: PoiCommonError -> String
+commonErrorMsg FileNotFound = "File not found."
+commonErrorMsg TrashCanNotFound = "Please ensure trash can location."
+commonErrorMsg IndexMustBePositive = "Index must be positive."
+commonErrorMsg IndexOverFlow = "Index too large."
+
+buryErrorMsg :: PoiBuryError -> String
+buryErrorMsg FilePathNotExist = "File path not exist."
+buryErrorMsg BeforeDayMustBeZeroOrPositive = "Before day option must be zero or positive number."
+
+showErrorMsg :: PoiActionError -> IO ()
+showErrorMsg (CommonError e) = putStrLn $ commonErrorMsg e
+showErrorMsg (PoiBuryError e) = putStrLn $ buryErrorMsg e
+showErrorMsg (FileIOError e) = print e
+
 main :: IO ()
 main = do
   action <- execPoiParser
@@ -58,7 +77,7 @@ main = do
               putStrLn "Empty."
             else
               putStr $ unlines $ formatTrashCan items
-        Left e -> print e
+        Left e -> showErrorMsg e
     Toss ps -> do
       tossed <- toss can ps
       case tossed of
@@ -68,16 +87,16 @@ main = do
       result <- pickUpByIndices can (map (+ negate 1) is)
       case result of
         Right picked -> putStrLn $ "picked up: " <> intercalate "," picked
-        Left e -> putStrLn $ "failed by " <> show e
+        Left e -> showErrorMsg e
     EmptyTrashCan -> doEmptyTrashCan can
     DeleteDayBefore d -> do
       t <- getCurrent
       result <- deleteTrashesByDayBefore can t d
       case result of
         Right ts -> putStrLn $ "Deleted" <> show (length ts) <> "files permanently."
-        Left e -> print e
+        Left e -> showErrorMsg e
     DeleteByIndex is -> do
       result <- deleteTrashByIndices can is
       case result of
         Right t -> putStrLn ("Deleted " <> intercalate "," (map makeFullPath t))
-        Left e -> print e
+        Left e -> showErrorMsg e
