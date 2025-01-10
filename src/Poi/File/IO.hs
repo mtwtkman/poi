@@ -60,7 +60,7 @@ findTrashCanLocation = do
       if e
         then makeAbsolute l <&> Right . TrashCanLocation
         else return $ Left (FilePathNotFound l)
-    _ -> getHomeDirectory <&> Right . TrashCanLocation . flip (<>) defaultPoiTrashCanName
+    _ -> getHomeDirectory <&> Right . TrashCanLocation . joinPath . flip (:) [defaultPoiTrashCanName]
 
 doesTrashCanExist :: TrashCanLocation -> IO Bool
 doesTrashCanExist (TrashCanLocation p) = doesDirectoryExist p
