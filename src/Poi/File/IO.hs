@@ -54,13 +54,13 @@ instance PoiAbnormal FileIOError
 findTrashCanLocation :: IO (Either FileIOError TrashCanLocation)
 findTrashCanLocation = do
   p <- lookupEnv "POI_TRASH_CAN_PATH"
-  case p of
-    Just l@(_ : _) -> do
-      e <- doesDirectoryExist l
-      if e
-        then makeAbsolute l <&> Right . TrashCanLocation
-        else return $ Left (FilePathNotFound l)
-    _ -> getHomeDirectory <&> Right . TrashCanLocation . joinPath . flip (:) [defaultPoiTrashCanName]
+  l <- case p of
+    Just d -> return d
+    Nothing -> getHomeDirectory <&> joinPath . flip (:) [defaultPoiTrashCanName]
+  e <- doesDirectoryExist l
+  if e
+    then makeAbsolute l <&> Right . TrashCanLocation
+    else return $ Left (FilePathNotFound l)
 
 doesTrashCanExist :: TrashCanLocation -> IO Bool
 doesTrashCanExist (TrashCanLocation p) = doesDirectoryExist p

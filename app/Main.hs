@@ -64,7 +64,7 @@ askPreparingTrashCanPath l = do
   case ans of
     Left e -> abort e >> return False
     Right No -> putStrLn ("Please create " <> show l <> " manually") >> return False
-    Right Yes -> createTrashCanDirectory l >> print ("created" <> show l) >> return True
+    Right Yes -> createTrashCanDirectory l >> print ("created `" <> show l <> "`") >> return True
 
 buryErrorMsg :: PoiBuryError -> String
 buryErrorMsg FilePathNotExist = "File path not exist."
