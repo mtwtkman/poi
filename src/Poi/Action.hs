@@ -16,6 +16,7 @@ module Poi.Action (
   duplicationSafeName,
   deleteTrashByIndices,
   pickUpByIndices,
+  showCurrentVersion,
 ) where
 
 import Control.Exception (try)
@@ -61,6 +62,7 @@ import System.Directory (
   renamePath,
  )
 import System.FilePath (joinPath)
+import Poi.Version (version, Version)
 
 data PoiActionError
   = CommonError PoiCommonError
@@ -89,6 +91,7 @@ data PoiAction
   | EmptyTrashCan
   | DeleteDayBefore Int
   | DeleteByIndex [Int]
+  | ShowVersion Version
   deriving (Show, Eq)
 
 type PoiActionResult a = Either PoiActionError a
@@ -197,3 +200,6 @@ deleteTrashesByDayBefore can baseDate dayBefore
               trashes
       forM_ (S.toList targets) (deleteTrash can)
       return $ Right targets
+
+showCurrentVersion :: IO PoiAction
+showCurrentVersion = return (ShowVersion version)

@@ -48,6 +48,7 @@ library
     Poi.Internal.Debug
     Poi.Prompt
     Poi.Time
+    Poi.Version
 
 test-suite test
   import: warnings, deps

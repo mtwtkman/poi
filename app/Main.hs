@@ -28,7 +28,7 @@ import Poi.Entity (
 import Poi.File.IO (FileIOError (FilePathNotFound), createTrashCanDirectory, findTrashCanLocation)
 import Poi.Prompt (PoiPromptError (InvalidInput), YN (No, Yes), confirm)
 import Poi.Time (getCurrent)
-import System.Exit (exitWith)
+import System.Exit (exitWith, exitSuccess)
 
 doEmptyTrashCan :: TrashCanLocation -> IO ()
 doEmptyTrashCan can = do
@@ -78,9 +78,16 @@ showErrorMsg e = do
     PoiTossError e' -> print e'
   exitWith (ExitFailure 1)
 
+
+isPathFreeCommand :: PoiAction -> Bool
+isPathFreeCommand (ShowVersion _) = True
+isPathFreeCommand _ = False
+
 main :: IO ()
 main = do
   action <- execPoiParser
+  when (isPathFreeCommand action) (perform' action >> exitSuccess)
+
   pre <- findTrashCanLocation
   case pre of
     Right can -> perform action can
@@ -88,6 +95,10 @@ main = do
       let can = TrashCanLocation d
       proceed <- askPreparingTrashCanPath can
       when proceed $ perform action can
+
+perform' :: PoiAction -> IO ()
+perform' (ShowVersion v) = print v
+perform' _ = return ()
 
 perform :: PoiAction -> TrashCanLocation -> IO ()
 perform action can =
@@ -126,3 +137,4 @@ perform action can =
       case result of
         Right t -> putStrLn ("Deleted " <> intercalate "," (map makeFullPath t))
         Left e -> abort e
+    ShowVersion v -> print v
