@@ -1,9 +1,9 @@
 # Poi
 Poi is a recycle bin for file heavily inspired from [trash-cli](https://github.com/andreafrancia/trash-cli).
 
-# Usage
-
 ```
+poi - Safety garbages management application
+
 Usage: poi COMMAND
 
 Available options:
@@ -14,4 +14,8 @@ Available commands:
   toss                     Move a target file to Poi's trash can
   pickup                   Back a trashed file from Poi's trash can
   bury                     Delete a target file permanently
+  version                  Show this version
 ```
+
+# Install
+Run `./dev.sh release` and then you can find an executable file as `dest/poi`.
