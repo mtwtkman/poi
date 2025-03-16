@@ -1,0 +1,109 @@
+#!/bin/sh
+
+cmd="$1"
+
+shift
+
+function create_box
+{
+  [ "${CONTAINER_ID}" ] && return
+  /bin/rm -rf .distrobox/home
+  [ "$(distrobox list | rg poi-dev)" ] && distrobox assemble rm --file .distrobox.ini
+  [ ! "$(distrobox list | rg poi-dev)" ] && distrobox assemble create --file .distrobox.ini
+}
+
+function create_symlink
+{
+  [ -L "${2}/${3}" ] && return
+
+  [ ! -e "${1}" ] && echo "Cannot find source path. So do nothing. (${1})" && return
+  ln -s "${1}" "${2}"
+}
+
+function initialize_box
+{
+  [ "$#" = 1 ] && [ "$1" = "-f" ] && unset BOX_INITIALIZED
+  [ "${BOX_INITIALIZED}" ] && echo "Already initialized bye." && exit 0
+
+  create_symlink ${DISTROBOX_HOST_HOME}/.ssh ${HOME} ".ssh"
+  create_symlink ${DISTROBOX_HOST_HOME}/.config/nvim ${XDG_CONFIG_HOME} "nvim"
+  create_symlink ${DISTROBOX_HOST_HOME}/.config/git ${XDG_CONFIG_HOME} "git"
+  create_symlink ${DISTROBOX_HOST_HOME}/.config/bat ${XDG_CONFIG_HOME} "bat"
+
+  cat <<EOF > ~/.bashrc
+#!/bin/sh
+
+export BOX_INITIALIZED=1
+
+alias l="ls -CF"
+alias la="ls -A"
+alias ll="ls -alF"
+alias vim="nvim"
+
+source /usr/share/bash-completion//bash_completion
+source /usr/share/bash-completion/completions/git
+source /usr/share/git/completion/git-completion.bash
+source /usr/share/git/completion/git-prompt.sh
+
+eval "\$(\$(whereis -b mise | cut -d ' ' -f 2) activate bash)"
+
+export FZF_DEFAULT_COMMAND="rg --files --no-ignore --hidden --follow -g \"!{.git,node_modules}/*\" 2> /dev/null"
+export FZF_DEFAULT_OPTS="""
+--reverse
+--extended
+--multi
+--inline-info
+--prompt='fzf>'
+--ansi
+--preview='bat --style=full --color=always {}'
+--bind=ctrl-f:page-down,ctrl-b:page-up,'ctrl-v:become(vim {})',ctrl-^:first,ctrl-/:last
+--color=bg+:#313244,spinner:#f5e0dc,hl:#f38ba8
+--color=fg:#cdd6f4,header:#f38ba8,info:#cba6f7,pointer:#f5e0dc
+--color=marker:#f5e0dc,fg+:#cdd6f4,prompt:#cba6f7,hl+:#f38ba8
+"""
+export FZF_CTRL_T_COMMAND="\rg --files --no-ignore --hidden --follow -g "!{.git,node_modules}/*" 2> /dev/null"
+
+export GIT_PS1_SHOWCOLORHINTS=true
+ps1_git='\$(__git_ps1 " (%s)")'
+ps1_distrobox=" : \e[33m${CONTAINER_ID}\e[0m"
+export PS1="\w\${ps1_git} - \${ps1_distrobox}\n$ "
+EOF
+
+  echo "generated ~.bashrc"
+
+  [ ! -f "mise.toml" ] && return
+
+  mise trust
+  mise install
+}
+
+function show_box_script_usage
+{
+  echo ""
+  echo "box is a thin wrapper to manipulate distrobox handy."
+  echo ""
+  echo "Usage: ./box [COMMAND] [OPTION]"
+  echo ""
+  echo "Commands"
+  echo "  * enter|e [-r]"
+  echo "    Enter your development container via distrobox. If the continer have not existed,  will create it."
+  echo "    You can pass -r option to recreate the container then .distrobox/home will be recreated also."
+  echo "  * init|i [-f]"
+  echo "    Initialize your development container. You should run command in your development container at first."
+  echo "    This command will deploy .bashrc and some configs(Current targets are nvim, bat and git)"
+  echo "    You can pass -f option to force initialize again."
+}
+
+case "${cmd}" in
+  enter|e)
+    [ "${CONTAINER_ID}" ] && exit 0
+    [ ! "$(distrobox list | rg poi-dev)" ] && create_box
+    [ "$#" = 1 ] && [ "$1" = "-r" ] && create_box
+    distrobox enter "poi-dev"
+    ;;
+  init|i)
+    [ ! "${CONTAINER_ID}" ] && exit 0
+    initialize_box $@
+    ;;
+  *) show_box_script_usage;;
+esac
