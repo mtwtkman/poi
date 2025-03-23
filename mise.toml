@@ -1,2 +1,29 @@
 [tools]
 ghcup = "latest"
+
+[tasks.build]
+run = "cabal build"
+alias = "b"
+
+[tasks.repl]
+run = "cabal repl"
+alias = "r"
+
+[tasks.test]
+run = "cabal test --test-show-details=always --test-options='--color always {{arg()}}'"
+alias = "t"
+
+[tasks."test:pattern"]
+run = "cabal test --test-show-details=always --test-options='--color always -p \"{{arg()}}\"'"
+alias = "tp"
+
+[tasks.exec]
+run = "cabal run poi --"
+
+[tasks.poi]
+run = "echo cabal run poi"
+env = { TRASH_CAN_PATH="{{ exec(command='pwd') }}/test-poi-can" }
+
+[tasks.versioning]
+run = "sh scripts/versioning"
+alias = "v"

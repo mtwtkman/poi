@@ -75,6 +75,14 @@ EOF
 
   mise trust
   mise install
+
+  ghcup install ghc
+  ghcup set ghc
+  ghcup install cabal
+  ghcup set cabal
+  ghcup install hls
+  ghcup set hls
+  cabal update
 }
 
 function show_box_script_usage
