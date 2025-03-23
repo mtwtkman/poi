@@ -9,7 +9,7 @@ alias = "b"
 run = "cabal repl"
 alias = "r"
 
-[tasks.test]
+[tasks."test:all"]
 run = "cabal test --test-show-details=always --test-options='--color always {{arg()}}'"
 alias = "t"
 
