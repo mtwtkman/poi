@@ -27,3 +27,7 @@ env = { TRASH_CAN_PATH="{{ exec(command='pwd') }}/test-poi-can" }
 [tasks.versioning]
 run = "sh scripts/versioning"
 alias = "v"
+
+[tasks.release]
+run = "sh scripts/release"
+alias = "r"
