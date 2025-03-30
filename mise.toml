@@ -5,10 +5,6 @@ ghcup = "latest"
 run = "cabal build"
 alias = "b"
 
-[tasks.repl]
-run = "cabal repl"
-alias = "r"
-
 [tasks."test:all"]
 run = "cabal test --test-show-details=always --test-options='--color always {{arg()}}'"
 alias = "t"
@@ -19,6 +15,7 @@ alias = "tp"
 
 [tasks.exec]
 run = "cabal run poi --"
+alias = "x"
 
 [tasks.poi]
 run = "echo cabal run poi"
