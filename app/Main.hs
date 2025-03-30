@@ -28,7 +28,7 @@ import Poi.Entity (
 import Poi.File.IO (FileIOError (FilePathNotFound), createTrashCanDirectory, findTrashCanLocation)
 import Poi.Prompt (PoiPromptError (InvalidInput), YN (No, Yes), confirm)
 import Poi.Time (getCurrent)
-import System.Exit (exitWith, exitSuccess)
+import System.Exit (exitSuccess, exitWith)
 
 doEmptyTrashCan :: TrashCanLocation -> IO ()
 doEmptyTrashCan can = do
@@ -77,7 +77,6 @@ showErrorMsg e = do
     PoiBuryError e' -> putStrLn $ buryErrorMsg e'
     PoiTossError e' -> print e'
   exitWith (ExitFailure 1)
-
 
 isPathFreeCommand :: PoiAction -> Bool
 isPathFreeCommand (ShowVersion _) = True
