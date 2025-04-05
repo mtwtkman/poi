@@ -2,7 +2,7 @@
 
 cmd="${1}"
 shift
-case "${cmd}"
+case "${cmd}" in
   build|b) cabal build;;
   repl|r) cabal repl;;
   test:all|t) cabal test --test-show-details=always --test-options="--color always $@";;
