@@ -71,8 +71,6 @@ source /usr/share/bash-completion/completions/git
 source /usr/share/git/completion/git-completion.bash
 source /usr/share/git/completion/git-prompt.sh
 
-eval "\$(mise activate bash)"
-
 export FZF_DEFAULT_COMMAND="rg --files --no-ignore --hidden --follow -g \"!{.git,node_modules}/*\" 2> /dev/null"
 export FZF_DEFAULT_OPTS="""
 --reverse
@@ -97,10 +95,7 @@ EOF
 
   echo "generated ~.bashrc"
 
-  [ ! -f "mise.toml" ] && return
-
-  mise trust
-  mise install
+  curl --proto '=https' --tlsv1.2 -sSf https://get-ghcup.haskell.org | sh
 }
 
 case "${cmd}" in
