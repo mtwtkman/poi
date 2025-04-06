@@ -8,7 +8,7 @@ case "${cmd}" in
   test:all|t) cabal test --test-show-details=always --test-options="--color always $@";;
   test:pattern|tp) cabal test --test-show-details=always --test-options='--color always -p \"$@\"';;
   exec) cabal run poi -- $@;;
-  poi) TRASH_CAN_PATH="$(pwd)/test-poi-can" cabal run poi;;
+  poi) TRASH_CAN_PATH="$(pwd)/test-poi-can" cabal run poi -- $@;;
   versioning|v) sh scripts/versioning;;
   release) sh scripts/release;;
   *) eval "${cmd} $@";;
