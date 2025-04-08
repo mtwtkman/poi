@@ -37,6 +37,7 @@ data PoiCommand
   | TossCommand [FilePath]
   | PickUpCommand [Int]
   | BuryCommand BuryOption
+  | TuiCommand
   | VersionCommand
   deriving (Show, Eq)
 
@@ -70,6 +71,9 @@ buryParser = BuryCommand <$> (empty' <|> dayBefore <|> index)
   index :: Parser BuryOption
   index = BuryIndex <$> some (option auto (long "index" <> short 'i' <> metavar "INDEX"))
 
+tuiParser :: Parser PoiCommand
+tuiParser = pure TuiCommand
+
 versionParser :: Parser PoiCommand
 versionParser = pure VersionCommand
 
@@ -80,6 +84,7 @@ poiParser =
         <> command "toss" (info tossParser (progDesc "Move a target file to Poi's trash can"))
         <> command "pickup" (info pickUpParser (progDesc "Back a trashed file from Poi's trash can"))
         <> command "bury" (info buryParser (progDesc "Delete a target file permanently"))
+        <> command "tui" (info tuiParser (progDesc "Start poi as tui application"))
         <> command "version" (info versionParser (progDesc "Show this version"))
     )
 
@@ -96,4 +101,5 @@ execPoiParser = detectAction =<< execParser opts
   detectAction (BuryCommand BuryAll) = return EmptyTrashCan
   detectAction (BuryCommand (BuryDayBefore d)) = return $ DeleteDayBefore d
   detectAction (BuryCommand (BuryIndex i)) = return $ DeleteByIndex i
+  detectAction TuiCommand = return StartTuiApplication
   detectAction VersionCommand = showCurrentVersion

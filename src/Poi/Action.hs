@@ -17,6 +17,7 @@ module Poi.Action (
   deleteTrashByIndices,
   pickUpByIndices,
   showCurrentVersion,
+  startTUIApplication,
 ) where
 
 import Control.Exception (try)
@@ -53,6 +54,7 @@ import Poi.File.IO (
   doesTrashCanExist,
   trashToCan,
  )
+import Poi.Version (Version, version)
 import Safe (atMay)
 import System.Directory (
   createDirectoryIfMissing,
@@ -62,7 +64,7 @@ import System.Directory (
   renamePath,
  )
 import System.FilePath (joinPath)
-import Poi.Version (version, Version)
+import qualified Poi.TUI.Main as TUI
 
 data PoiActionError
   = CommonError PoiCommonError
@@ -91,6 +93,7 @@ data PoiAction
   | EmptyTrashCan
   | DeleteDayBefore Int
   | DeleteByIndex [Int]
+  | StartTuiApplication
   | ShowVersion Version
   deriving (Show, Eq)
 
@@ -203,3 +206,6 @@ deleteTrashesByDayBefore can baseDate dayBefore
 
 showCurrentVersion :: IO PoiAction
 showCurrentVersion = return (ShowVersion version)
+
+startTUIApplication :: IO ()
+startTUIApplication = TUI.start

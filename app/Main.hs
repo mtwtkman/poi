@@ -16,7 +16,7 @@ import Poi.Action (
   emptyTrashCan,
   listUp,
   pickUpByIndices,
-  toss,
+  toss, startTUIApplication,
  )
 import Poi.Cli (execPoiParser)
 import Poi.Display (formatTrashCan, makeFullPath)
@@ -136,4 +136,5 @@ perform action can =
       case result of
         Right t -> putStrLn ("Deleted " <> intercalate "," (map makeFullPath t))
         Left e -> abort e
+    StartTuiApplication -> startTUIApplication
     ShowVersion v -> print v
