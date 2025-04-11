@@ -2,6 +2,7 @@ module Poi.Action.PickUp (pickUpByIndex, pickUpByIndices) where
 
 import qualified Data.UUID as U
 import Poi.Action.Internal.Context (withIndex, withIndices)
+import Poi.Action.Internal.Helper (duplicationSafeName)
 import Poi.Action.Type.Index (IndexSpecified)
 import Poi.Action.Type.Result (PoiActionResult)
 import Poi.Display (makeFullPath)
@@ -13,9 +14,6 @@ import Poi.Entity (
  )
 import Poi.File.IO (deleteEmptyTrashedAtPath)
 import System.Directory (createDirectoryIfMissing, doesPathExist, removeDirectoryRecursive, renamePath)
-
-duplicationSafeName :: String -> String
-duplicationSafeName = (".poi.pickup." <>)
 
 pickUpByIndex :: IndexSpecified FilePath
 pickUpByIndex can i =

@@ -19,17 +19,10 @@ import Data.Time (
   secondsToNominalDiffTime,
  )
 import qualified Data.UUID as U
-import Poi.Action (
-  IndexSpecified,
-  PoiActionError (..),
-  PoiBuryError (..),
-  PoiCommonError (..),
-  deleteTrashByIndex,
-  deleteTrashesByDayBefore,
-  duplicationSafeName,
-  emptyTrashCan,
-  pickUpByIndex,
- )
+import Poi.Action.Internal.Helper (duplicationSafeName)
+import Poi.Action.PickUp (pickUpByIndex)
+import Poi.Action.Type.Index (IndexSpecified)
+import Poi.Action.Type.Result (PoiActionError (CommonError, PoiBuryError), PoiCommonError (IndexMustBePositive, IndexOverFlow), PoiBuryError (BeforeDayMustBeZeroOrPositive))
 import Poi.Entity (
   OrderedTrashCan (OrderedTrashCan),
   SortOrder (Desc),
@@ -61,6 +54,7 @@ import System.FilePath (joinPath)
 import Test.Tasty (TestTree)
 import Test.Tasty.HUnit (testCase, (@?), (@?=))
 import Test.Tasty.Runners (TestTree (TestGroup))
+import Poi.Action.Bury (emptyTrashCan, deleteTrashByIndex, deleteTrashesByDayBefore)
 
 tests :: TestTree
 tests =

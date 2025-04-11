@@ -48,14 +48,15 @@ library
   exposed-modules:
     Poi.Abnormal
     Poi.Action
-    Poi.Action.Internal.Context
     Poi.Action.Bury
+    Poi.Action.Internal.Context
+    Poi.Action.Internal.Helper
     Poi.Action.ListUp
     Poi.Action.PickUp
     Poi.Action.Toss
-    Poi.Action.Version
     Poi.Action.Type.Index
     Poi.Action.Type.Result
+    Poi.Action.Version
     Poi.Cli
     Poi.Display
     Poi.Entity
