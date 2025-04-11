@@ -6,18 +6,26 @@ import Control.Monad (forM_, when)
 import Data.List (intercalate)
 import GHC.IO.Exception (ExitCode (ExitFailure))
 import Poi.Abnormal (PoiAbnormal)
-import Poi.Action (
-  PoiAction (..),
-  PoiActionError (CommonError, PoiBuryError, PoiTossError),
-  PoiBuryError (BeforeDayMustBeZeroOrPositive, FilePathNotExist),
-  PoiCommonError (FileNotFound, IndexMustBePositive, IndexOverFlow, TrashCanNotFound),
+import Poi.Action (PoiAction (..))
+import Poi.Action.Bury (
   deleteTrashByIndices,
   deleteTrashesByDayBefore,
   emptyTrashCan,
-  listUp,
-  pickUpByIndices,
-  toss, startTUIApplication,
  )
+import Poi.Action.ListUp (listUp)
+import Poi.Action.PickUp (pickUpByIndices)
+import Poi.Action.Toss (toss)
+import Poi.Action.Type.Result (
+  PoiActionError (CommonError, PoiBuryError, PoiTossError),
+  PoiBuryError (BeforeDayMustBeZeroOrPositive, FilePathNotExist),
+  PoiCommonError (
+    FileNotFound,
+    IndexMustBePositive,
+    IndexOverFlow,
+    TrashCanNotFound
+  ),
+ )
+import Poi.Action.Version (showCurrentVersion)
 import Poi.Cli (execPoiParser)
 import Poi.Display (formatTrashCan, makeFullPath)
 import Poi.Entity (
@@ -25,10 +33,15 @@ import Poi.Entity (
   SortOrder (Desc),
   TrashCanLocation (TrashCanLocation),
  )
-import Poi.File.IO (FileIOError (FilePathNotFound), createTrashCanDirectory, findTrashCanLocation)
+import Poi.File.IO (
+  FileIOError (FilePathNotFound),
+  createTrashCanDirectory,
+  findTrashCanLocation,
+ )
 import Poi.Prompt (PoiPromptError (InvalidInput), YN (No, Yes), confirm)
 import Poi.Time (getCurrent)
 import System.Exit (exitSuccess, exitWith)
+import qualified Poi.TUI.Main as TUI
 
 doEmptyTrashCan :: TrashCanLocation -> IO ()
 doEmptyTrashCan can = do
@@ -79,7 +92,7 @@ showErrorMsg e = do
   exitWith (ExitFailure 1)
 
 isPathFreeCommand :: PoiAction -> Bool
-isPathFreeCommand (ShowVersion _) = True
+isPathFreeCommand ShowVersion = True
 isPathFreeCommand _ = False
 
 main :: IO ()
@@ -96,7 +109,7 @@ main = do
       when proceed $ perform action can
 
 perform' :: PoiAction -> IO ()
-perform' (ShowVersion v) = print v
+perform' ShowVersion = showCurrentVersion >>= print
 perform' _ = return ()
 
 perform :: PoiAction -> TrashCanLocation -> IO ()
@@ -136,5 +149,5 @@ perform action can =
       case result of
         Right t -> putStrLn ("Deleted " <> intercalate "," (map makeFullPath t))
         Left e -> abort e
-    StartTuiApplication -> startTUIApplication
-    ShowVersion v -> print v
+    StartTuiApplication -> TUI.start
+    ShowVersion -> showCurrentVersion >>= print

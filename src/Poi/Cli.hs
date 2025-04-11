@@ -24,7 +24,7 @@ import Options.Applicative (
   (<**>),
   (<|>),
  )
-import Poi.Action (PoiAction (..), showCurrentVersion)
+import Poi.Action (PoiAction (..))
 
 data BuryOption
   = BuryAll
@@ -102,4 +102,4 @@ execPoiParser = detectAction =<< execParser opts
   detectAction (BuryCommand (BuryDayBefore d)) = return $ DeleteDayBefore d
   detectAction (BuryCommand (BuryIndex i)) = return $ DeleteByIndex i
   detectAction TuiCommand = return StartTuiApplication
-  detectAction VersionCommand = showCurrentVersion
+  detectAction VersionCommand = return ShowVersion

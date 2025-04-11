@@ -8,9 +8,11 @@ module Poi.File.IO (
   doesEmptyDirectory,
   deleteTrash,
   createTrashCanDirectory,
-  FileIOError(..),
+  FileIOError (..),
+  deleteEmptyTrashedAtPath,
 ) where
 
+import Control.Monad (when)
 import Data.Foldable (foldrM)
 import Data.Functor ((<&>))
 import qualified Data.Set as S
@@ -109,3 +111,10 @@ deleteTrash can (Trash{trashedAt = t}) = removeDirectoryRecursive (buildTrashedA
 
 createTrashCanDirectory :: TrashCanLocation -> IO ()
 createTrashCanDirectory l = createDirectoryIfMissing True (show l)
+
+deleteEmptyTrashedAtPath :: TrashCanLocation -> Trash -> IO Bool
+deleteEmptyTrashedAtPath can t = do
+  let trashedAtPath = buildTrashedAtPath can (trashedAt t)
+  needToClean <- doesEmptyDirectory trashedAtPath
+  when needToClean (removeDirectoryRecursive trashedAtPath)
+  return needToClean
