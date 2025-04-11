@@ -13,7 +13,12 @@ import Poi.Entity (
   buildTrashIdPath,
  )
 import Poi.File.IO (deleteEmptyTrashedAtPath)
-import System.Directory (createDirectoryIfMissing, doesPathExist, removeDirectoryRecursive, renamePath)
+import System.Directory (
+  createDirectoryIfMissing,
+  doesPathExist,
+  removeDirectoryRecursive,
+  renamePath,
+ )
 
 pickUpByIndex :: IndexSpecified FilePath
 pickUpByIndex can i =

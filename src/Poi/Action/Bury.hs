@@ -8,11 +8,27 @@ module Poi.Action.Bury (
 import Control.Monad (forM_)
 import Data.Foldable (foldrM)
 import qualified Data.Set as S
-import Data.Time (LocalTime (LocalTime), TimeOfDay (TimeOfDay), addLocalTime, fromGregorian, nominalDay, secondsToNominalDiffTime)
+import Data.Time (
+  LocalTime (LocalTime),
+  TimeOfDay (TimeOfDay),
+  addLocalTime,
+  fromGregorian,
+  nominalDay,
+  secondsToNominalDiffTime,
+ )
 import Poi.Action.Internal.Context (withIndex, withIndices)
 import Poi.Action.Type.Index (IndexSpecified)
-import Poi.Action.Type.Result (PoiActionError (PoiBuryError), PoiActionResult, PoiBuryError (BeforeDayMustBeZeroOrPositive))
-import Poi.Entity (Trash (Trash, trashedAt), TrashCan (TrashCan), TrashCanLocation (TrashCanLocation), buildTrashIdPath)
+import Poi.Action.Type.Result (
+  PoiActionError (PoiBuryError),
+  PoiActionResult,
+  PoiBuryError (BeforeDayMustBeZeroOrPositive),
+ )
+import Poi.Entity (
+  Trash (Trash, trashedAt),
+  TrashCan (TrashCan),
+  TrashCanLocation (TrashCanLocation),
+  buildTrashIdPath,
+ )
 import Poi.File.IO (deleteEmptyTrashedAtPath, deleteTrash, digTrashCan)
 import System.Directory (listDirectory, removeDirectoryRecursive)
 import System.FilePath (joinPath)
