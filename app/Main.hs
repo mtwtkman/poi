@@ -118,7 +118,7 @@ perform action can =
     ListUp -> do
       result <- listUp Desc can
       case result of
-        Right (OrderedTrashCan items) -> do
+        Right (OrderedTrashCan items _) -> do
           let (TrashCanLocation canS) = can
           putStrLn $ "=== POI Trash Can: " <> canS <> " ==="
           if null items

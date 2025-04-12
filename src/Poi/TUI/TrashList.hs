@@ -3,10 +3,9 @@ module Poi.TUI.TrashList (render) where
 import qualified Brick.AttrMap as A
 import Brick.Types (Widget)
 import qualified Brick.Widgets.Border as B
-import qualified Brick.Widgets.Center as C
 import Brick.Widgets.Core (hLimit, str, vLimit, withAttr, (<+>))
 import qualified Brick.Widgets.List as L
-import Poi.Entity (OrderedTrashCan)
+import Poi.Entity (OrderedTrashCan, Trash (trashOriginalPath))
 
 trashedItemListAttr :: A.AttrName
 trashedItemListAttr = L.listSelectedAttr <> A.attrName "trashedItemList"
@@ -17,7 +16,10 @@ trashedItemList sel a =
         if sel
           then withAttr trashedItemListAttr (str $ "<" <> s <> ">")
           else str s
-   in C.hCenter $ str "Item " <+> selStr (show a)
+   in str "Item " <+> selStr (show a)
+
+makeRow :: Trash -> Widget ()
+makeRow = str . trashOriginalPath
 
 render :: L.List () OrderedTrashCan -> Widget ()
 render items =

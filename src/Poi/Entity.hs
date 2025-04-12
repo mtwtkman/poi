@@ -52,16 +52,22 @@ newtype TimeRecord = TimeRecord LocalTime
   deriving (Show)
 
 data SortOrder = Asc | Desc
+  deriving (Eq, Show)
 
-newtype OrderedTrashCan = OrderedTrashCan [Trash]
-  deriving (Show)
+data OrderedTrashCan = OrderedTrashCan
+  { orderedTrashes :: [Trash]
+  , sortOrder :: SortOrder
+  }
+  deriving (Eq, Show)
 
 sortTrashes :: SortOrder -> TrashCan -> OrderedTrashCan
 sortTrashes order (TrashCan{trashes = t}) =
-  OrderedTrashCan $
-    case order of
-      Asc -> toAscList t
-      Desc -> toDescList t
+  OrderedTrashCan
+    ( case order of
+        Asc -> toAscList t
+        Desc -> toDescList t
+    )
+    order
 
 doesTrashExist :: TrashCan -> Trash -> Maybe Trash
 doesTrashExist (TrashCan{trashes = ts}) t = if member t ts then Just t else Nothing

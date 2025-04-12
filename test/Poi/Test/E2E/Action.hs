@@ -181,7 +181,7 @@ test_deleteTrashByIndex =
                 return (testData, trashed)
             )
             ( \_ (testCan, trashed) -> do
-                let (OrderedTrashCan sorted) = sortTrashes Desc (TrashCan $ S.fromList trashed)
+                let (OrderedTrashCan sorted _) = sortTrashes Desc (TrashCan $ S.fromList trashed)
                 (i, expected) <- pickRandom sorted
                 let expectedRemaining = takeWhile (/= expected) trashed <> tail (dropWhile (/= expected) trashed)
                     can = TrashCanLocation testCan

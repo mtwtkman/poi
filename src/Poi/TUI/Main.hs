@@ -70,7 +70,7 @@ initialState = do
     Right can -> do
       result <- listUp Asc can
       case result of
-        Right (OrderedTrashCan items) -> return $ L.list () (Vec.fromList items) 1
+        Right (OrderedTrashCan items order) -> return $ L.list () (Vec.fromList items) 1
         Left e -> error $ show e
     Left e -> error $ show e
 

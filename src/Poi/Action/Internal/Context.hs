@@ -27,7 +27,7 @@ withIndex :: TrashCanLocation -> Int -> (Trash -> IO a) -> IO (PoiActionResult a
 withIndex l i f
   | i < 0 = return $ Left (CommonError IndexMustBePositive)
   | otherwise = withTrashCan l $ \can -> do
-      OrderedTrashCan items <- digTrashCan can <&> sortTrashes Desc
+      OrderedTrashCan items _ <- digTrashCan can <&> sortTrashes Desc
       case atMay items i of
         Just item -> f item <&> Right
         Nothing -> return $ Left (CommonError IndexOverFlow)
