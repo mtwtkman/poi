@@ -55,7 +55,7 @@ alias l="ls -CF"
 alias la="ls -A"
 alias ll="ls -alF"
 alias vim="nvim"
-alias update="sudo pacman -Syu && pacman -Qqd | sudo pacman -Rsu -"
+alias update="sudo pacman -Syu && sudo pacman -Qqdt | sudo pacman -Rus -"
 
 source /usr/share/bash-completion//bash_completion
 source /usr/share/bash-completion/completions/git

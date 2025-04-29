@@ -41,7 +41,7 @@ import Poi.File.IO (
 import Poi.Prompt (PoiPromptError (InvalidInput), YN (No, Yes), confirm)
 import Poi.Time (getCurrent)
 import System.Exit (exitSuccess, exitWith)
-import qualified Poi.TUI.Main as TUI
+import qualified Poi.TUI.App as TUI
 
 doEmptyTrashCan :: TrashCanLocation -> IO ()
 doEmptyTrashCan can = do

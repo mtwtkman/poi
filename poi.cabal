@@ -64,8 +64,10 @@ library
     Poi.File.Parser
     Poi.Internal.Debug
     Poi.Prompt
-    Poi.TUI.Main
+    Poi.TUI.App
+    Poi.TUI.State
     Poi.TUI.TrashList
+    Poi.TUI.Common
     Poi.Time
     Poi.Version
 
