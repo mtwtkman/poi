@@ -13,9 +13,13 @@ import qualified Data.Text as T
 import Lens.Micro ((^.))
 import Poi.TUI.Common (Name)
 import Poi.TUI.State (State, filterCriteria, filterInputFocus)
+import Poi.Entity (Trash)
 
 handleEvent :: BrickEvent Name e -> EventM Name State ()
 handleEvent e = zoom filterCriteria $ E.handleEditorEvent e
+
+filterTrashesByPath :: T.Text -> [Trash] -> [Trash]
+filterTrashesByPath t xs = undefined
 
 cursor :: State -> [CursorLocation Name] -> Maybe (CursorLocation Name)
 cursor = F.focusRingCursor (^. filterInputFocus)

@@ -41,6 +41,7 @@ library
     microlens-th,
     mtl,
     optparse-applicative,
+    regex,
     safe,
     text,
     vector,

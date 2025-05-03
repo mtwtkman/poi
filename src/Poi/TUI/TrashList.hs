@@ -6,15 +6,14 @@ module Poi.TUI.TrashList (
 import qualified Brick.AttrMap as A
 import Brick.Types (BrickEvent (VtyEvent), EventM, Widget, zoom)
 import qualified Brick.Widgets.Border as B
-import Brick.Widgets.Core (str, withAttr)
-import Brick.Widgets.List (GenericList (listElements))
+import Brick.Widgets.Core (Padding (Max), padBottom, padRight, str, withAttr)
 import qualified Brick.Widgets.List as L
-import qualified Data.Vector as Vec
+import Data.Vector as Vec
 import qualified Graphics.Vty as V
 import Lens.Micro ((^.))
-import Poi.Entity (Trash (Trash))
+import Poi.Entity (Trash (Trash), TrashCanLocation (TrashCanLocation))
 import Poi.TUI.Common (Name)
-import Poi.TUI.State (State, currentTrashes)
+import Poi.TUI.State (State, currentTrashes, trashCanLocation)
 import System.FilePath (joinPath)
 
 trashedItemListAttr :: A.AttrName
@@ -43,7 +42,11 @@ handleEvent _ = return ()
 
 render :: State -> Widget Name
 render st =
-  let l = st ^. currentTrashes
-      items = listElements l
-   in B.borderWithLabel (str $ "Trashes: " <> show (Vec.length items)) $
-        L.renderListWithIndex trashedItemList True l
+  let
+    TrashCanLocation can = st ^. trashCanLocation
+    ts = st ^. currentTrashes
+   in
+    B.borderWithLabel (str $ "Trash can path: " <> can) $
+      if Vec.null (L.listElements ts)
+        then padRight Max $ padBottom Max $ str "Trash can is empty."
+        else L.renderListWithIndex trashedItemList True ts
