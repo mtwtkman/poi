@@ -13,29 +13,38 @@ import Brick.Widgets.Core (
   (<+>),
  )
 import qualified Brick.Widgets.List as L
+import Control.Monad (void)
 import qualified Graphics.Vty as V
+import qualified Poi.TUI.FilterInput as FilterInput
 import Poi.TUI.State (State, initialState)
 import qualified Poi.TUI.TrashList as TrashList
-import Control.Monad (void)
+import Poi.TUI.Common (Name)
+import Graphics.Vty (Modifier(MCtrl))
 
-drawUI :: State -> [Widget () ]
+drawUI :: State -> [Widget Name]
 drawUI st = [ui]
  where
   trashList = TrashList.render st
+  filterInput = FilterInput.render st
   ui =
     C.vCenter $
       vBox
-        [ C.hCenter trashList
+        [ C.hCenter filterInput
+        , C.hCenter trashList
         ]
 
-appEvent :: T.BrickEvent () e -> T.EventM () State ()
+appEvent :: T.BrickEvent Name e -> T.EventM Name State ()
 appEvent ev@(T.VtyEvent e) =
   case e of
-    V.EvKey (V.KChar 'q') [] -> M.halt
-    _ -> TrashList.handleEvent ev
+    V.EvKey (V.KChar 'c') [MCtrl] -> M.halt
+    V.EvKey V.KUp [] -> TrashList.handleEvent ev
+    V.EvKey V.KDown [] -> TrashList.handleEvent ev
+    V.EvKey (V.KChar 'b') [MCtrl] -> TrashList.handleEvent ev
+    V.EvKey (V.KChar 'f') [MCtrl] -> TrashList.handleEvent ev
+    _ -> FilterInput.handleEvent ev
 appEvent _ = return ()
 
-listDrawElement :: (Show a) => Bool -> a -> Widget ()
+listDrawElement :: (Show a) => Bool -> a -> Widget Name
 listDrawElement sel a =
   let selStr s =
         if sel
@@ -54,11 +63,11 @@ theMap =
     , (customAttr, fg V.cyan)
     ]
 
-app :: M.App State e ()
+app :: M.App State e Name
 app =
   M.App
     { M.appDraw = drawUI
-    , M.appChooseCursor = M.showFirstCursor
+    , M.appChooseCursor = FilterInput.cursor
     , M.appHandleEvent = appEvent
     , M.appStartEvent = return ()
     , M.appAttrMap = const theMap
