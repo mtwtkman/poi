@@ -15,11 +15,10 @@ import Brick.Widgets.Core (
 import qualified Brick.Widgets.List as L
 import Control.Monad (void)
 import qualified Graphics.Vty as V
+import Poi.TUI.Common (Name)
 import qualified Poi.TUI.FilterInput as FilterInput
 import Poi.TUI.State (State, initialState)
 import qualified Poi.TUI.TrashList as TrashList
-import Poi.TUI.Common (Name)
-import Graphics.Vty (Modifier(MCtrl))
 
 drawUI :: State -> [Widget Name]
 drawUI st = [ui]
@@ -36,12 +35,15 @@ drawUI st = [ui]
 appEvent :: T.BrickEvent Name e -> T.EventM Name State ()
 appEvent ev@(T.VtyEvent e) =
   case e of
-    V.EvKey (V.KChar 'c') [MCtrl] -> M.halt
-    V.EvKey V.KUp [] -> TrashList.handleEvent ev
-    V.EvKey V.KDown [] -> TrashList.handleEvent ev
-    V.EvKey (V.KChar 'b') [MCtrl] -> TrashList.handleEvent ev
-    V.EvKey (V.KChar 'f') [MCtrl] -> TrashList.handleEvent ev
+    V.EvKey (V.KChar 'c') [V.MCtrl] -> M.halt
+    V.EvKey V.KEsc [] -> M.halt
+    V.EvKey V.KUp [] -> handleTrashList
+    V.EvKey V.KDown [] -> handleTrashList
+    V.EvKey (V.KChar 'b') [V.MCtrl] -> handleTrashList
+    V.EvKey (V.KChar 'f') [V.MCtrl] -> handleTrashList
     _ -> FilterInput.handleEvent ev
+ where
+  handleTrashList = TrashList.handleEvent ev
 appEvent _ = return ()
 
 listDrawElement :: (Show a) => Bool -> a -> Widget Name

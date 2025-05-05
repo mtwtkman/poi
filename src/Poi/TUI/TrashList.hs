@@ -3,13 +3,14 @@ module Poi.TUI.TrashList (
   render,
 ) where
 
+import qualified Graphics.Vty as V
 import qualified Brick.AttrMap as A
 import Brick.Types (BrickEvent (VtyEvent), EventM, Widget, zoom)
 import qualified Brick.Widgets.Border as B
 import Brick.Widgets.Core (Padding (Max), padBottom, padRight, str, withAttr)
 import qualified Brick.Widgets.List as L
-import Data.Vector as Vec
-import qualified Graphics.Vty as V
+import Data.Time.Format (defaultTimeLocale, formatTime)
+import qualified Data.Vector as Vec
 import Lens.Micro ((^.))
 import Poi.Entity (Trash (Trash), TrashCanLocation (TrashCanLocation))
 import Poi.TUI.Common (Name)
@@ -28,16 +29,15 @@ trashedItemList i sel t =
    in makeRow selStr (i + 1) t
 
 makeRow :: (String -> Widget Name) -> Int -> Trash -> Widget Name
-makeRow s i (Trash name root _ _) =
-  s $ show i <> ": " <> joinPath [root, name]
+makeRow s i (Trash name root _ trashedAt) =
+  s $ show i <> ". " <> formatTime defaultTimeLocale "%Y-%m-%dT%H:%M:%S" trashedAt <> ": " <> joinPath [root, name]
 
 handleEvent :: BrickEvent Name e -> EventM Name State ()
-handleEvent (VtyEvent e) =
+handleEvent (VtyEvent e) = do
   let l = zoom currentTrashes
-   in case e of
-        V.EvKey (V.KChar 'b') [V.MCtrl] -> l L.listMovePageUp
-        V.EvKey (V.KChar 'f') [V.MCtrl] -> l L.listMovePageDown
-        _ -> l $ L.handleListEvent e
+  case e of
+    V.EvKey V.KEnter [] -> l $ L.handleListEvent e
+    _ -> l $ L.handleListEvent e
 handleEvent _ = return ()
 
 render :: State -> Widget Name
