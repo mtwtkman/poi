@@ -42,6 +42,7 @@ library
     mtl,
     optparse-applicative,
     regex,
+    regex-tdfa,
     safe,
     text,
     vector,
@@ -67,10 +68,11 @@ library
     Poi.Internal.Debug
     Poi.Prompt
     Poi.TUI.App
+    Poi.TUI.CommandSelector
+    Poi.TUI.Common
     Poi.TUI.FilterInput
     Poi.TUI.State
     Poi.TUI.TrashList
-    Poi.TUI.Common
     Poi.Time
     Poi.Version
 

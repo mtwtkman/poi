@@ -1,3 +1,5 @@
+{-# LANGUAGE OverloadedStrings #-}
+
 module Poi.TUI.FilterInput (
   handleEvent,
   render,
@@ -11,15 +13,22 @@ import Brick.Widgets.Core (str, txt, vLimit)
 import qualified Brick.Widgets.Edit as E
 import qualified Data.Text as T
 import Lens.Micro ((^.))
+import Poi.Entity (Trash (Trash))
 import Poi.TUI.Common (Name)
 import Poi.TUI.State (State, filterCriteria, filterInputFocus)
-import Poi.Entity (Trash)
+import System.FilePath (joinPath)
+import Text.Regex.TDFA ((=~))
 
 handleEvent :: BrickEvent Name e -> EventM Name State ()
 handleEvent e = zoom filterCriteria $ E.handleEditorEvent e
 
 filterTrashesByPath :: T.Text -> [Trash] -> [Trash]
-filterTrashesByPath t xs = undefined
+filterTrashesByPath t = filter (searchPath t)
+ where
+  searchPath :: T.Text -> Trash -> Bool
+  searchPath ptn (Trash name root _ _) =
+    let path = T.pack $ joinPath [root, name]
+     in path =~ T.unpack ptn
 
 cursor :: State -> [CursorLocation Name] -> Maybe (CursorLocation Name)
 cursor = F.focusRingCursor (^. filterInputFocus)
@@ -29,7 +38,7 @@ inputRow = txt . T.unlines
 
 render :: State -> Widget Name
 render st =
-  B.borderWithLabel (str "Filter") $
+  B.borderWithLabel (str "Filter by filepath") $
     vLimit 1 $
       F.withFocusRing
         (st ^. filterInputFocus)
