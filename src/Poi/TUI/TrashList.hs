@@ -14,7 +14,7 @@ import qualified Data.Vector as Vec
 import Lens.Micro ((^.))
 import Poi.Entity (Trash (Trash), TrashCanLocation (TrashCanLocation))
 import Poi.TUI.Common (Name)
-import Poi.TUI.State (State, currentTrashes, trashCanLocation)
+import Poi.TUI.State (State, trashList, trashCanLocation)
 import System.FilePath (joinPath)
 
 trashedItemListAttr :: A.AttrName
@@ -34,7 +34,7 @@ makeRow s i (Trash name root _ trashedAt) =
 
 handleEvent :: BrickEvent Name e -> EventM Name State ()
 handleEvent (VtyEvent e) = do
-  let l = zoom currentTrashes
+  let l = zoom trashList
   case e of
     V.EvKey V.KEnter [] -> l $ L.handleListEvent e
     _ -> l $ L.handleListEvent e
@@ -44,7 +44,7 @@ render :: State -> Widget Name
 render st =
   let
     TrashCanLocation can = st ^. trashCanLocation
-    ts = st ^. currentTrashes
+    ts = st ^. trashList
    in
     B.borderWithLabel (str $ "Trash can path: " <> can) $
       if Vec.null (L.listElements ts)

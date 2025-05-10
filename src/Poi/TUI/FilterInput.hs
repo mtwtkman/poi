@@ -7,28 +7,38 @@ module Poi.TUI.FilterInput (
 ) where
 
 import qualified Brick.Focus as F
-import Brick.Types (BrickEvent, CursorLocation, EventM, Widget, zoom)
+import Brick.Types (BrickEvent, CursorLocation, EventM, Widget, get, modify, zoom)
 import qualified Brick.Widgets.Border as B
 import Brick.Widgets.Core (str, txt, vLimit)
+import Brick.Widgets.Edit (getEditContents)
 import qualified Brick.Widgets.Edit as E
+import qualified Brick.Widgets.List as L
 import qualified Data.Text as T
+import qualified Data.Vector as Vec
 import Lens.Micro ((^.))
 import Poi.Entity (Trash (Trash))
 import Poi.TUI.Common (Name)
-import Poi.TUI.State (State, filterCriteria, filterInputFocus)
+import Poi.TUI.State (State, allTrashes, filterCriteria, filterInputFocus, trashList)
 import System.FilePath (joinPath)
-import Text.Regex.TDFA ((=~))
+import Text.Fuzzy (match)
 
 handleEvent :: BrickEvent Name e -> EventM Name State ()
-handleEvent e = zoom filterCriteria $ E.handleEditorEvent e
+handleEvent e = do
+  zoom filterCriteria $ E.handleEditorEvent e
+  st <- get
+  let criteria = T.unlines $ getEditContents $ st ^. filterCriteria
+      ts = st ^. allTrashes
+      newL = Vec.fromList $ if T.null criteria then ts else filterTrashesByPath criteria ts
+  zoom trashList $ modify $ L.listReplace newL Nothing
 
 filterTrashesByPath :: T.Text -> [Trash] -> [Trash]
-filterTrashesByPath t = filter (searchPath t)
+filterTrashesByPath p = go p []
  where
-  searchPath :: T.Text -> Trash -> Bool
-  searchPath ptn (Trash name root _ _) =
-    let path = T.pack $ joinPath [root, name]
-     in path =~ T.unpack ptn
+  go :: T.Text -> [Trash] -> [Trash] -> [Trash]
+  go _ acc [] = acc
+  go ptn acc (x@(Trash name root _ _) : rest) = case match ptn (joinPath [root, name]) "" "" T.pack False of
+    Just _ -> x : go ptn acc rest
+    Nothing -> go ptn acc rest
 
 cursor :: State -> [CursorLocation Name] -> Maybe (CursorLocation Name)
 cursor = F.focusRingCursor (^. filterInputFocus)

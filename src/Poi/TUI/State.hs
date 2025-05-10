@@ -4,7 +4,8 @@
 module Poi.TUI.State (
   State (..),
   initialState,
-  currentTrashes,
+  allTrashes,
+  trashList,
   trashCanLocation,
   filterCriteria,
   filterInputFocus,
@@ -28,7 +29,8 @@ import Poi.File.IO (findTrashCanLocation)
 import Poi.TUI.Common (Name (FilterPatternInput, PoiTrashList))
 
 data State = State
-  { _currentTrashes :: L.List Name Trash
+  { _trashList :: L.List Name Trash
+  , _allTrashes:: [Trash]
   , _filterCriteria :: E.Editor T.Text Name
   , _filterInputFocus :: F.FocusRing Name
   , _trashCanLocation :: TrashCanLocation
@@ -48,6 +50,7 @@ initialState = do
           return $
             State
               (initialCurrentTrashes trashes)
+              trashes
               initialFilterCriteia
               (F.focusRing [FilterPatternInput])
               can

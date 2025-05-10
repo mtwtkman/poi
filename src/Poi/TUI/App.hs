@@ -16,6 +16,7 @@ import qualified Brick.Widgets.List as L
 import Control.Monad (void)
 import qualified Graphics.Vty as V
 import Poi.TUI.Common (Name)
+import qualified Poi.TUI.Development.DebugWindow as DebugWindow
 import qualified Poi.TUI.FilterInput as FilterInput
 import Poi.TUI.State (State, initialState)
 import qualified Poi.TUI.TrashList as TrashList
@@ -29,6 +30,7 @@ drawUI st = [ui]
     C.vCenter $
       vBox
         [ C.hCenter filterInput
+        , C.hCenter $ DebugWindow.render st
         , C.hCenter trashList
         ]
 
@@ -61,9 +63,10 @@ theMap :: A.AttrMap
 theMap =
   A.attrMap
     V.defAttr
-    [ (L.listSelectedAttr, V.black `on` V.white)
-    , (customAttr, fg V.cyan)
-    ]
+    ( [ (L.listSelectedAttr, V.black `on` V.white)
+      ]
+        <> DebugWindow.style
+    )
 
 app :: M.App State e Name
 app =

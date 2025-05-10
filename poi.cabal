@@ -36,13 +36,13 @@ library
   build-depends:
     aeson,
     brick,
+    fuzzy,
     microlens,
     microlens-mtl,
     microlens-th,
     mtl,
     optparse-applicative,
     regex,
-    regex-tdfa,
     safe,
     text,
     vector,
@@ -74,6 +74,7 @@ library
     Poi.TUI.State
     Poi.TUI.TrashList
     Poi.Time
+    Poi.TUI.Development.DebugWindow
     Poi.Version
 
 test-suite test
