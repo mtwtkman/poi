@@ -65,17 +65,17 @@ library
     Poi.Entity
     Poi.File.IO
     Poi.File.Parser
-    Poi.Internal.Debug
     Poi.Internal.Data.Text
+    Poi.Internal.Debug
     Poi.Prompt
     Poi.TUI.App
     Poi.TUI.CommandSelector
     Poi.TUI.Common
+    Poi.TUI.Development.DebugWindow
     Poi.TUI.FilterInput
     Poi.TUI.State
     Poi.TUI.TrashList
     Poi.Time
-    Poi.TUI.Development.DebugWindow
     Poi.Version
 
 test-suite test

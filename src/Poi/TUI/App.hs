@@ -72,7 +72,7 @@ theMap =
 app :: M.App State e Name
 app =
   M.App
-    { M.appDraw = drawUI True
+    { M.appDraw = drawUI False
     , M.appChooseCursor = FilterInput.cursor
     , M.appHandleEvent = appEvent
     , M.appStartEvent = return ()
