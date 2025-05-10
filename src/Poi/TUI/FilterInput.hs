@@ -21,12 +21,13 @@ import Poi.TUI.Common (Name)
 import Poi.TUI.State (State, allTrashes, filterCriteria, filterInputFocus, trashList)
 import System.FilePath (joinPath)
 import Text.Fuzzy (match)
+import Poi.Internal.Data.Text (concatText)
 
 handleEvent :: BrickEvent Name e -> EventM Name State ()
 handleEvent e = do
   zoom filterCriteria $ E.handleEditorEvent e
   st <- get
-  let criteria = T.unlines $ getEditContents $ st ^. filterCriteria
+  let criteria = concatText $ getEditContents $ st ^. filterCriteria
       ts = st ^. allTrashes
       newL = Vec.fromList $ if T.null criteria then ts else filterTrashesByPath criteria ts
   zoom trashList $ modify $ L.listReplace newL Nothing
@@ -44,7 +45,7 @@ cursor :: State -> [CursorLocation Name] -> Maybe (CursorLocation Name)
 cursor = F.focusRingCursor (^. filterInputFocus)
 
 inputRow :: [T.Text] -> Widget Name
-inputRow = txt . T.unlines
+inputRow = txt . concatText
 
 render :: State -> Widget Name
 render st =

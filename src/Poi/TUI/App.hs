@@ -4,7 +4,7 @@ import qualified Brick.AttrMap as A
 import qualified Brick.Main as M
 import Brick.Types (Widget)
 import qualified Brick.Types as T
-import Brick.Util (fg, on)
+import Brick.Util (on)
 import qualified Brick.Widgets.Center as C
 import Brick.Widgets.Core (
   str,
@@ -21,18 +21,19 @@ import qualified Poi.TUI.FilterInput as FilterInput
 import Poi.TUI.State (State, initialState)
 import qualified Poi.TUI.TrashList as TrashList
 
-drawUI :: State -> [Widget Name]
-drawUI st = [ui]
+drawUI :: Bool -> State -> [Widget Name]
+drawUI isDebug st = [ui]
  where
   trashList = TrashList.render st
   filterInput = FilterInput.render st
   ui =
     C.vCenter $
       vBox
-        [ C.hCenter filterInput
-        , C.hCenter $ DebugWindow.render st
-        , C.hCenter trashList
-        ]
+        ( [ C.hCenter filterInput
+          , C.hCenter trashList
+          ]
+            <> ([C.hCenter $ DebugWindow.render st | isDebug])
+        )
 
 appEvent :: T.BrickEvent Name e -> T.EventM Name State ()
 appEvent ev@(T.VtyEvent e) =
@@ -71,7 +72,7 @@ theMap =
 app :: M.App State e Name
 app =
   M.App
-    { M.appDraw = drawUI
+    { M.appDraw = drawUI True
     , M.appChooseCursor = FilterInput.cursor
     , M.appHandleEvent = appEvent
     , M.appStartEvent = return ()

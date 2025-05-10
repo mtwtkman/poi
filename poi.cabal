@@ -66,6 +66,7 @@ library
     Poi.File.IO
     Poi.File.Parser
     Poi.Internal.Debug
+    Poi.Internal.Data.Text
     Poi.Prompt
     Poi.TUI.App
     Poi.TUI.CommandSelector
