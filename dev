@@ -11,7 +11,11 @@ case "${cmd}" in
   poi)
     can="${HOME}/test-poi-can"
     [[ ! -d ${can} ]] && mkdir "${can}"
-    POI_TRASH_CAN_PATH="${can}" cabal run poi -- $@
+    cabal_flag=""
+    if [[ "${TUI_DEBUG}" ]]; then
+      cabal_flag="${cabal_flag} -f tui_debug"
+    fi
+    POI_TRASH_CAN_PATH="${can}" cabal run ${cabal_flag} poi -- $@
     ;;
   versioning|v) sh scripts/versioning;;
   release) sh scripts/release;;

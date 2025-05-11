@@ -30,6 +30,10 @@ executable poi
   hs-source-dirs: app
   default-language: Haskell2010
 
+Flag tui_debug
+  Description: Turne on debug mode for tui
+  Default: False
+
 library
   import: warnings, deps
   hs-source-dirs: src
@@ -47,6 +51,9 @@ library
     text,
     vector,
     vty,
+
+  if flag(tui_debug)
+      cpp-options: -DTUI_DEBUG
 
   exposed-modules:
     Poi.Abnormal
@@ -69,7 +76,7 @@ library
     Poi.Internal.Debug
     Poi.Prompt
     Poi.TUI.App
-    Poi.TUI.CommandSelector
+    Poi.TUI.CommandGuide
     Poi.TUI.Common
     Poi.TUI.Development.DebugWindow
     Poi.TUI.FilterInput
