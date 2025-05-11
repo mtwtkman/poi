@@ -31,8 +31,9 @@ render =
   vLimit 1 $
     padRight Max $
       hBox
-        [ guide "ctrl-x" "delete"
-        , succGuide "ctrl-r" "rollback"
-        , succGuide "ctrl-f" "forward a page"
-        , succGuide "ctrl-b" "backward a page"
+        [ guide "ctrl-x" "Delete"
+        , succGuide "ctrl-r" "Rollback"
+        , succGuide "ctrl-f" "Forward a page"
+        , succGuide "ctrl-b" "Backward a page"
+        , succGuide "tab" "Mark"
         ]

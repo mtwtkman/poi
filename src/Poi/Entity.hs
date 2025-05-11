@@ -31,7 +31,10 @@ data Trash = Trash
   , trashId :: !U.UUID
   , trashedAt :: !LocalTime
   }
-  deriving (Show, Eq)
+  deriving (Show)
+
+instance Eq Trash where
+  a == b = trashId a == trashId b
 
 instance Ord Trash where
   (Trash{trashOriginalPath = o1, trashOriginalParentPath = p1, trashId = i1, trashedAt = t1})

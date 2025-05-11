@@ -17,29 +17,46 @@ import qualified Data.Text as T
 import qualified Data.Vector as Vec
 import Lens.Micro ((^.))
 import Poi.Entity (Trash (Trash))
-import Poi.TUI.Common (Name)
-import Poi.TUI.State (State, allTrashes, filterCriteria, filterInputFocus, trashList)
-import System.FilePath (joinPath)
-import Text.Fuzzy (match)
 import Poi.Internal.Data.Text (concatText)
+import Poi.TUI.Common (Name)
+import Poi.TUI.State (ListItem (ListItem), State, filterCriteria, filterInputFocus, match, trashList, unmatch)
+import System.FilePath (joinPath)
+import qualified Text.Fuzzy as F
 
 handleEvent :: BrickEvent Name e -> EventM Name State ()
 handleEvent e = do
   zoom filterCriteria $ E.handleEditorEvent e
   st <- get
   let criteria = concatText $ getEditContents $ st ^. filterCriteria
-      ts = st ^. allTrashes
-      newL = Vec.fromList $ if T.null criteria then ts else filterTrashesByPath criteria ts
-  zoom trashList $ modify $ L.listReplace newL Nothing
+      ts = L.listElements $ st ^. trashList
+      sel = L.listSelectedElement $ st ^. trashList
+      newL =
+        if T.null criteria
+          then Vec.map match ts
+          else filterTrashesByPath criteria ts
+      newPos = case sel of
+        Nothing -> Just 0
+        Just (current, x) ->
+          let targets = Vec.filter (\(ListItem _ _ matched) -> matched) ts
+           in if Vec.elem x targets then Just current else Vec.findIndex (== Vec.head targets) ts
+  zoom trashList $ modify $ L.listReplace newL newPos
 
-filterTrashesByPath :: T.Text -> [Trash] -> [Trash]
-filterTrashesByPath p = go p []
+filterTrashesByPath :: T.Text -> Vec.Vector ListItem -> Vec.Vector ListItem
+filterTrashesByPath p = go p Vec.empty
  where
-  go :: T.Text -> [Trash] -> [Trash] -> [Trash]
-  go _ acc [] = acc
-  go ptn acc (x@(Trash name root _ _) : rest) = case match ptn (joinPath [root, name]) "" "" T.pack False of
-    Just _ -> x : go ptn acc rest
-    Nothing -> go ptn acc rest
+  go :: T.Text -> Vec.Vector ListItem -> Vec.Vector ListItem -> Vec.Vector ListItem
+  go ptn acc xs
+    | Vec.null xs = acc
+    | otherwise =
+        let x@(ListItem (Trash name root _ _) _ matched) = Vec.head xs
+            rest = Vec.tail xs
+         in Vec.concat
+              [ Vec.singleton $
+                  case F.match ptn (joinPath [root, name]) "" "" T.pack False of
+                    Just _ -> if matched then x else match x
+                    Nothing -> if matched then unmatch x else x
+              , go ptn acc rest
+              ]
 
 cursor :: State -> [CursorLocation Name] -> Maybe (CursorLocation Name)
 cursor = F.focusRingCursor (^. filterInputFocus)

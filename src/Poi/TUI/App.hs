@@ -5,7 +5,6 @@ import qualified Brick.AttrMap as A
 import qualified Brick.Main as M
 import Brick.Types (Widget)
 import qualified Brick.Types as T
-import Brick.Util (on)
 import Brick.Widgets.Core (
   vBox,
   vLimit, emptyWidget,
@@ -50,6 +49,9 @@ appEvent ev@(T.VtyEvent e) =
     V.EvKey V.KDown [] -> handleTrashList
     V.EvKey (V.KChar 'b') [V.MCtrl] -> handleTrashList
     V.EvKey (V.KChar 'f') [V.MCtrl] -> handleTrashList
+    V.EvKey (V.KChar 'x') [V.MCtrl] -> handleTrashList
+    V.EvKey (V.KChar 'r') [V.MCtrl] -> handleTrashList
+    V.EvKey (V.KChar '\t') [] -> handleTrashList
     _ -> FilterInput.handleEvent ev
  where
   handleTrashList = TrashList.handleEvent ev
@@ -62,8 +64,7 @@ theMap :: Mode -> State -> A.AttrMap
 theMap mode _ =
   A.attrMap
     V.defAttr
-    ( [ (L.listSelectedAttr, V.black `on` V.white)
-      ]
+      ( TrashList.style
         <> if isDebug mode
           then DebugWindow.style
           else
