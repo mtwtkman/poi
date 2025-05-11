@@ -6,12 +6,9 @@ import qualified Brick.Main as M
 import Brick.Types (Widget)
 import qualified Brick.Types as T
 import Brick.Util (on)
-import qualified Brick.Widgets.Center as C
 import Brick.Widgets.Core (
-  str,
   vBox,
-  withAttr,
-  (<+>),
+  vLimit, emptyWidget,
  )
 import qualified Brick.Widgets.List as L
 import Control.Monad (void)
@@ -35,12 +32,13 @@ drawUI mode st = [ui]
   trashList = TrashList.render st
   filterInput = FilterInput.render st
   ui =
-    C.vCenter $
       vBox
-        ( [ C.hCenter filterInput
-          , C.hCenter trashList
+        ( [ filterInput
+          , trashList
+          , CommandGuide.render
+          , vLimit 2 emptyWidget
           ]
-            <> ([C.hCenter $ DebugWindow.render st | isDebug mode])
+            <> ([DebugWindow.render st | isDebug mode])
         )
 
 appEvent :: T.BrickEvent Name e -> T.EventM Name State ()
@@ -56,14 +54,6 @@ appEvent ev@(T.VtyEvent e) =
  where
   handleTrashList = TrashList.handleEvent ev
 appEvent _ = return ()
-
-listDrawElement :: (Show a) => Bool -> a -> Widget Name
-listDrawElement sel a =
-  let selStr s =
-        if sel
-          then withAttr customAttr (str $ "<" <> s <> ">")
-          else str s
-   in C.hCenter $ str "Item " <+> selStr (show a)
 
 customAttr :: A.AttrName
 customAttr = L.listSelectedAttr <> A.attrName "custom"

@@ -3,5 +3,5 @@ module Poi.TUI.Common (Name(..)) where
 data Name =
   PoiTrashList
   | FilterPatternInput
-  | CommandSelector
+  | CommandGuide
   deriving (Eq, Ord, Show)
