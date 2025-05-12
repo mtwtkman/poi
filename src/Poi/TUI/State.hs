@@ -15,6 +15,7 @@ module Poi.TUI.State (
   mark,
   unmark,
   toggleMark,
+  fetchVisibleMarkedTrashes,
 )
 where
 
@@ -64,6 +65,9 @@ data State = State
   , _filterInputFocus :: F.FocusRing Name
   , _trashCanLocation :: TrashCanLocation
   }
+
+fetchVisibleMarkedTrashes :: State -> V.Vector ListItem
+fetchVisibleMarkedTrashes (State xs _ _ _) = V.filter (\(ListItem _ mk mt) -> mk && mt) (L.listElements xs)
 
 makeLenses ''State
 
