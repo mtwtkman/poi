@@ -1,4 +1,4 @@
-module Poi.TUI.CommandGuide (
+module Poi.TUI.Widget.CommandGuide (
   render,
   style,
 ) where

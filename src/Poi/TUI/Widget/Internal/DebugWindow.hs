@@ -1,4 +1,4 @@
-module Poi.TUI.Development.DebugWindow (render, style)
+module Poi.TUI.Widget.Internal.DebugWindow (render, style)
 where
 
 import Brick (AttrName, Padding (Max), attrName, padRight, str, txt, vBox, vLimit, withAttr)

@@ -23,7 +23,7 @@ import qualified Brick.Focus as F
 import qualified Brick.Widgets.Edit as E
 import qualified Brick.Widgets.List as L
 import qualified Data.List as Li
-import Data.Text as T
+import qualified Data.Text as T
 import qualified Data.Vector as V
 import Lens.Micro.TH (makeLenses)
 import Poi.Action.ListUp (listUp)

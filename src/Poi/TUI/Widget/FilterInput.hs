@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Poi.TUI.FilterInput (
+module Poi.TUI.Widget.FilterInput (
   handleEvent,
   render,
   cursor,

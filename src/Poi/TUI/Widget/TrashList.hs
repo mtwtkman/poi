@@ -1,4 +1,4 @@
-module Poi.TUI.TrashList (
+module Poi.TUI.Widget.TrashList (
   handleEvent,
   render,
   style,
@@ -6,16 +6,18 @@ module Poi.TUI.TrashList (
 
 import Brick (emptyWidget, on)
 import Brick.AttrMap (AttrName, attrName)
-import Brick.Types (BrickEvent (VtyEvent), EventM, Widget, modify, zoom)
+import Brick.Types (BrickEvent (VtyEvent), EventM, Widget, get, modify, zoom)
 import qualified Brick.Widgets.Border as B
 import Brick.Widgets.Core (Padding (Max), padBottom, padRight, str, withAttr)
 import qualified Brick.Widgets.List as L
+import Control.Monad.IO.Class (MonadIO (liftIO))
 import Data.Time.Format (defaultTimeLocale, formatTime)
 import qualified Data.Vector as Vec
 import Graphics.Vty (Attr, black, white)
 import qualified Graphics.Vty as V
 import Lens.Micro ((^.))
 import Lens.Micro.Mtl (use)
+import Poi.Action.Bury (deleteTrashByIndices)
 import Poi.Entity (Trash (Trash), TrashCanLocation (TrashCanLocation))
 import Poi.TUI.Common (Name)
 import Poi.TUI.State (ListItem (ListItem), State, toggleMark, trashCanLocation, trashList)
@@ -43,11 +45,27 @@ makeRow s i (ListItem (Trash name root _ trashedAt) marked True) =
 makeRow _ _ (ListItem _ _ False) =
   emptyWidget
 
+-- TODO: implementation
 buryTrash :: EventM Name State ()
-buryTrash = undefined
+buryTrash = do
+  st <- get
+  liftIO $ do
+    res <- deleteTrashByIndices (st ^. trashCanLocation) (indicies $ L.listElements (st ^. trashList))
+    case res of
+      Right done -> return ()
+      Left err -> return ()
+ where
+  indicies :: Vec.Vector ListItem -> [Int]
+  indicies xs = Vec.toList $ Vec.map fst (Vec.filter (\(_, ListItem _ m _) -> m) $ Vec.zip (Vec.fromList [1 ..]) xs)
 
 pickUpTrash :: EventM Name State ()
 pickUpTrash = undefined
+ where
+  pickUpSelected :: EventM Name State ()
+  pickUpSelected = undefined
+
+  pickUpMarked :: EventM Name State ()
+  pickUpMarked = undefined
 
 updateMark :: Int -> ListItem -> EventM Name State ()
 updateMark i t = do
@@ -55,6 +73,7 @@ updateMark i t = do
   let newL = Vec.map (\x -> if t == x then toggleMark x else x) (L.listElements l)
   zoom trashList $ modify $ L.listReplace newL (Just i)
 
+handleEvent :: BrickEvent n e -> EventM Name State ()
 handleEvent (VtyEvent e) = do
   case e of
     V.EvKey (V.KChar 'x') [V.MCtrl] -> buryTrash

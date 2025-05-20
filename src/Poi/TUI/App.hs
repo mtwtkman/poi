@@ -12,12 +12,14 @@ import Brick.Widgets.Core (
 import qualified Brick.Widgets.List as L
 import Control.Monad (void)
 import qualified Graphics.Vty as V
-import qualified Poi.TUI.CommandGuide as CommandGuide
+import qualified Poi.TUI.Widget.CommandGuide as CommandGuide
 import Poi.TUI.Common (Name)
-import qualified Poi.TUI.Development.DebugWindow as DebugWindow
-import qualified Poi.TUI.FilterInput as FilterInput
+import qualified Poi.TUI.Widget.Internal.DebugWindow as DebugWindow
+import qualified Poi.TUI.Widget.FilterInput as FilterInput
 import Poi.TUI.State (State, initialState)
-import qualified Poi.TUI.TrashList as TrashList
+import qualified Poi.TUI.Widget.TrashList as TrashList
+import Brick.Widgets.Center (centerLayer)
+import qualified Poi.TUI.Widget.Confirm as Confirm
 
 data Mode = Debug | Release
 
@@ -72,7 +74,6 @@ theMap mode _ =
               <> CommandGuide.style
     )
 
--- TODO: using preprocessor
 buildMode :: Mode
 buildMode =
 #ifdef TUI_DEBUG
