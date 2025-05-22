@@ -18,8 +18,6 @@ import qualified Poi.TUI.Widget.Internal.DebugWindow as DebugWindow
 import qualified Poi.TUI.Widget.FilterInput as FilterInput
 import Poi.TUI.State (State, initialState)
 import qualified Poi.TUI.Widget.TrashList as TrashList
-import Brick.Widgets.Center (centerLayer)
-import qualified Poi.TUI.Widget.Confirm as Confirm
 
 data Mode = Debug | Release
 
