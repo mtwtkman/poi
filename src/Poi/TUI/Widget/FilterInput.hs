@@ -6,6 +6,7 @@ module Poi.TUI.Widget.FilterInput (
   cursor,
 ) where
 
+import Control.Applicative ((<|>))
 import qualified Brick.Focus as F
 import Brick.Types (BrickEvent, CursorLocation, EventM, Widget, get, modify, zoom)
 import qualified Brick.Widgets.Border as B
@@ -38,7 +39,7 @@ handleEvent e = do
         Nothing -> Just 0
         Just (current, x) ->
           let targets = Vec.filter (\(ListItem _ _ matched) -> matched) ts
-           in if Vec.elem x targets then Just current else Vec.findIndex (== Vec.head targets) ts
+           in Vec.elemIndex x targets <|> Just current
   zoom trashList $ modify $ L.listReplace newL newPos
 
 filterTrashesByPath :: T.Text -> Vec.Vector ListItem -> Vec.Vector ListItem

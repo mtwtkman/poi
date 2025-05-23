@@ -45,7 +45,6 @@ makeRow s i (ListItem (Trash name root _ trashedAt) marked True) =
 makeRow _ _ (ListItem _ _ False) =
   emptyWidget
 
--- TODO: implementation
 buryTrash :: EventM Name State ()
 buryTrash = do
   st <- get
