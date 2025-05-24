@@ -1,14 +1,19 @@
 module Main where
 
-import Data.UUID as U
 import Control.Monad (forM_, replicateM)
 import Data.Functor ((<&>))
 import Data.Time (LocalTime, addLocalTime, secondsToNominalDiffTime)
-import Poi.File.IO (findTrashCanLocation, trashToCan)
+import Poi.Entity (
+  TrashCanLocation,
+  TrashDirectoryStructureInfo (TrashDirectoryStructureInfo),
+  trashDirectoryStructureInfo,
+ )
+import Poi.File.IO (findTrashCanLocation, saveParentLocation, trashToCan)
 import Poi.Time (getCurrent)
+import System.Directory (createDirectoryIfMissing)
 import System.Environment (lookupEnv)
+import System.FilePath (joinPath)
 import System.Random (randomRIO)
-import Poi.Entity (TrashCanLocation)
 
 defaultDataSize :: Int
 defaultDataSize = 50
@@ -34,24 +39,24 @@ randomFilePath = do
   randomPick :: IO Char
   randomPick = randomRIO (0, length chars - 1) >>= \i -> return $ chars !! i
 
-trash :: IO (LocalTime, FilePath)
-trash = (,) <$> randomLocalTime <*> randomFilePath
+genData :: IO (LocalTime, String, String)
+genData = (,,) <$> randomLocalTime <*> (randomFilePath >>= \p -> return ("/parent/" <> p)) <*> randomFilePath
 
+putData :: TrashCanLocation -> LocalTime -> String -> String -> IO ()
+putData can t parent name = do
+  (TrashDirectoryStructureInfo root container _) <- trashDirectoryStructureInfo can t
+  createDirectoryIfMissing True container
+  saveParentLocation root parent
+  writeFile (joinPath [container, name]) ""
+  return ()
 
-buildTrashDest :: TrashCanLocation -> LocalTime -> IO FilePath
-buildTrashDest can t = do
-  fid <- U.nextRandom
-  return joinPath [buildTrashedAtPath can t, U.toString fid, trashContainerName]
-
-generate :: IO ()
-generate = do
+main :: IO ()
+main = do
   wrappedCan <- findTrashCanLocation
   case wrappedCan of
     Right can -> do
       s <- datasize
-      ts <- replicateM s trash
-      forM_ ts (\(lt, tr) -> trashToCan can [tr] lt)
+      ts <- replicateM s genData
+      forM_ ts (\(t, parent, name) -> putData can t parent name)
+      print $ show s <> "files created."
     Left _ -> print "Trash can location cannot be detected ."
-
-main :: IO ()
-main = generate >> print "done"

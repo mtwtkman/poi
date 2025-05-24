@@ -84,7 +84,7 @@ poiParser =
         <> command "toss" (info tossParser (progDesc "Move a target file to Poi's trash can"))
         <> command "pickup" (info pickUpParser (progDesc "Back a trashed file from Poi's trash can"))
         <> command "bury" (info buryParser (progDesc "Delete a target file permanently"))
-        <> command "tui" (info tuiParser (progDesc "Start poi as tui application"))
+        <> command "tui" (info tuiParser (progDesc "Start poi as tui application(UNDER DEVELOPMENT)"))
         <> command "version" (info versionParser (progDesc "Show this version"))
     )
 

@@ -38,6 +38,8 @@ executable gendata
     poi,
     random,
     time,
+    directory,
+    filepath,
 
   ghc-options: -threaded
   hs-source-dirs: gendata
