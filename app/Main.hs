@@ -41,7 +41,7 @@ import Poi.File.IO (
 import Poi.Prompt (PoiPromptError (InvalidInput), YN (No, Yes), confirm)
 import Poi.Time (getCurrent)
 import System.Exit (exitSuccess, exitWith)
-import qualified Poi.TUI.App as TUI
+--import qualified Poi.TUI.App as TUI
 
 doEmptyTrashCan :: TrashCanLocation -> IO ()
 doEmptyTrashCan can = do
@@ -149,5 +149,5 @@ perform action can =
       case result of
         Right t -> putStrLn ("Deleted " <> intercalate "," (map makeFullPath t))
         Left e -> abort e
-    StartTuiApplication -> TUI.start
+    StartTuiApplication -> print ("not implemented yet" :: String) -- TUI.start
     ShowVersion -> showCurrentVersion >>= print

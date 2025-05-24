@@ -15,11 +15,14 @@ module Poi.Entity (
   trashedAtFormat,
   buildTAbsoluteTrashFilePath,
   buildTrashIdPath,
+  trashDirectoryStructureInfo,
+  TrashDirectoryStructureInfo(..)
 ) where
 
 import Data.Set (Set, member, toAscList, toDescList)
 import Data.Time (LocalTime, defaultTimeLocale, formatTime)
 import qualified Data.UUID as U
+import qualified Data.UUID.V4 as U
 import System.Directory (makeAbsolute)
 import System.FilePath (joinPath, splitDrive)
 
@@ -32,6 +35,13 @@ data Trash = Trash
   , trashedAt :: !LocalTime
   }
   deriving (Show)
+
+data TrashDirectoryStructureInfo = TrashDirectoryStructureInfo
+  { trashDirectoryStructureInfoRoot :: !FilePath
+  , trashDirectoryStructureInfoContainer :: !FilePath
+  , trashDirectoryStructureInfoTrashId :: !U.UUID
+  }
+  deriving (Show, Eq)
 
 instance Eq Trash where
   a == b = trashId a == trashId b
@@ -86,6 +96,13 @@ formatTrashedAt = formatTime defaultTimeLocale trashedAtFormat
 
 buildTrashedAtPath :: TrashCanLocation -> LocalTime -> TrashedAtPath
 buildTrashedAtPath (TrashCanLocation can) t = joinPath [can, formatTrashedAt t]
+
+trashDirectoryStructureInfo :: TrashCanLocation -> LocalTime -> IO TrashDirectoryStructureInfo
+trashDirectoryStructureInfo can t = do
+  fid <- U.nextRandom
+  let root = joinPath [buildTrashedAtPath can t, U.toString fid]
+      container = joinPath [root, trashContainerName]
+  return $ TrashDirectoryStructureInfo root container fid
 
 buildTAbsoluteTrashFilePath :: TrashCanLocation -> Trash -> IO FilePath
 buildTAbsoluteTrashFilePath can (Trash{trashOriginalPath = f, trashId = fid, trashedAt = t}) =

@@ -16,13 +16,7 @@ import Control.Monad (when)
 import Data.Foldable (foldrM)
 import Data.Functor ((<&>))
 import qualified Data.Set as S
-import Data.Time (
-  getCurrentTime,
-  getCurrentTimeZone,
-  utcToLocalTime,
- )
-import qualified Data.UUID as U
-import qualified Data.UUID.V4 as U
+import Data.Time (LocalTime)
 import Poi.Abnormal (PoiAbnormal)
 import Poi.Entity (
   Trash (..),
@@ -32,7 +26,8 @@ import Poi.Entity (
   buildTrashedAtPath,
   defaultPoiTrashCanName,
   parentFileName,
-  trashContainerName,
+  trashDirectoryStructureInfo,
+  TrashDirectoryStructureInfo(..)
  )
 import Poi.File.Parser (parseTrashedFilePath)
 import Safe (lastMay)
@@ -77,31 +72,25 @@ digTrashCan t@(TrashCanLocation can) =
 saveParentLocation :: TrashedAtPath -> FilePath -> IO ()
 saveParentLocation trashedAtPath = writeFile (joinPath [trashedAtPath, parentFileName])
 
-oneTrashToCan :: TrashCanLocation -> FilePath -> IO Trash
-oneTrashToCan can src = do
+oneTrashToCan :: TrashCanLocation -> FilePath -> LocalTime -> IO Trash
+oneTrashToCan can src t = do
   absSrc <- makeAbsolute src
   fx <- doesPathExist absSrc
   if not fx
     then ioError (userError "FileNotExist")
     else do
-      tz <- getCurrentTimeZone
-      utc <- getCurrentTime
-      fid <- U.nextRandom
-      let current = utcToLocalTime tz utc
-          trashedAtPath = buildTrashedAtPath can current
-          container = joinPath [trashedAtPath, U.toString fid]
-          srcParent = takeDirectory absSrc
-          trashDest = joinPath [container, trashContainerName]
+      (TrashDirectoryStructureInfo root container fid) <- trashDirectoryStructureInfo can t
+      let srcParent = takeDirectory absSrc
       case lastMay (splitPath absSrc) of
         Just srcName -> do
-          createDirectoryIfMissing True trashDest
-          saveParentLocation container srcParent
-          renamePath absSrc (joinPath [trashDest, srcName])
-          return $ Trash absSrc srcParent fid current
+          createDirectoryIfMissing True container
+          saveParentLocation root srcParent
+          renamePath absSrc (joinPath [container, srcName])
+          return $ Trash absSrc srcParent fid t
         Nothing -> ioError $ userError "Cannot detect file"
 
-trashToCan :: TrashCanLocation -> [FilePath] -> IO [Trash]
-trashToCan can = mapM (oneTrashToCan can)
+trashToCan :: TrashCanLocation -> [FilePath] -> LocalTime -> IO [Trash]
+trashToCan can fs t = mapM (\f -> oneTrashToCan can f t) fs
 
 doesEmptyDirectory :: FilePath -> IO Bool
 doesEmptyDirectory p = listDirectory p <&> null

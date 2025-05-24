@@ -6,3 +6,5 @@ cradle:
       component: "exe:poi"
     - path: "./test"
       component: "test:test"
+    - path: "./gendata"
+      component: "exe:gendata"

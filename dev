@@ -1,4 +1,22 @@
 #!/bin/sh
+function prepare_can
+{
+  refresh="$1"
+  can="${HOME}/test-poi-can"
+  if [ ! -d ${can} ]; then
+    mkdir "${can}"
+  elif [ "${refresh}" == "y" ]; then
+    /bin/rm -rf "${can}/*"
+  fi
+  echo "${can}"
+}
+
+function gendata
+{
+  refresh="$1"
+  can="$(prepare_can ${refresh})"
+  POI_TRASH_CAN_PATH="${can}" cabal run gendata
+}
 
 cmd="${1}"
 shift
@@ -9,8 +27,7 @@ case "${cmd}" in
   test:pattern|tp) cabal test --test-show-details=always --test-options='--color always -p \"$@\"';;
   exec) cabal run poi -- $@;;
   poi)
-    can="${HOME}/test-poi-can"
-    [[ ! -d ${can} ]] && mkdir "${can}"
+    can="$(prepare_can)"
     cabal_flag=""
     if [[ "${TUI_DEBUG}" ]]; then
       cabal_flag="${cabal_flag} -f tui_debug"
@@ -19,5 +36,7 @@ case "${cmd}" in
     ;;
   versioning|v) sh scripts/versioning;;
   release) sh scripts/release;;
+  gendata) gendata;;
+  gendata-x) gendata 'y';;
   *) eval "${cmd} $@";;
 esac

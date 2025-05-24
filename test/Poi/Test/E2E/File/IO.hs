@@ -137,6 +137,7 @@ test_trashToCan =
       )
       ( \(testSrcRoot, testData) (testCan, _) -> do
           let src = map makeFullPathFromPoiTestData testData
-          actual <- trashToCan (TrashCanLocation testCan) src
+          current <- getCurrent
+          actual <- trashToCan (TrashCanLocation testCan) src current
           testbody testSrcRoot testCan src actual
       )
