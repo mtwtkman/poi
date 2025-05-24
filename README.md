@@ -18,4 +18,4 @@ Available commands:
 ```
 
 # Install
-Run `./dev.sh release` and then you can find an executable file as `dest/poi`.
+Run `./dev release` and then you can find an executable file as `dest/poi`.
