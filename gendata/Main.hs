@@ -46,7 +46,7 @@ randomFilePath = do
   randomPick = randomRIO (0, length chars - 1) >>= \i -> return $ chars !! i
 
 genData :: IO (LocalTime, String, String)
-genData = (,,) <$> randomLocalTime <*> (randomFilePath >>= \p -> return ("/parent/" <> p)) <*> randomFilePath
+genData = (,,) <$> randomLocalTime <*> (randomFilePath >>= \p -> return ("/tmp/poi-gendata-parent/" <> p)) <*> randomFilePath
 
 putData :: TrashCanLocation -> LocalTime -> String -> String -> IO ()
 putData can t parent name = do
