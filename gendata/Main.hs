@@ -8,18 +8,24 @@ import Poi.Entity (
   TrashDirectoryStructureInfo (TrashDirectoryStructureInfo),
   trashDirectoryStructureInfo,
  )
-import Poi.File.IO (findTrashCanLocation, saveParentLocation, trashToCan)
+import Poi.File.IO (findTrashCanLocation, saveParentLocation)
 import Poi.Time (getCurrent)
 import System.Directory (createDirectoryIfMissing)
 import System.Environment (lookupEnv)
 import System.FilePath (joinPath)
 import System.Random (randomRIO)
-
-defaultDataSize :: Int
-defaultDataSize = 50
+import Text.Read (readMaybe)
+import Control.Applicative ((<|>))
+import Data.Maybe (fromJust)
 
 datasize :: IO Int
-datasize = lookupEnv "DATASIZE" <&> maybe 50 read
+datasize = do
+  let defaultSize = 50 :: Int
+  env <- lookupEnv "POI_GENDATA_SIZE"
+  case env of
+    Nothing -> return defaultSize
+    Just "" -> return defaultSize
+    Just v -> return $ fromJust $ readMaybe v <|> Just 50
 
 randomLocalTime :: IO LocalTime
 randomLocalTime = do
@@ -58,5 +64,5 @@ main = do
       s <- datasize
       ts <- replicateM s genData
       forM_ ts (\(t, parent, name) -> putData can t parent name)
-      print $ show s <> "files created."
+      print $ show s <> " files created."
     Left _ -> print "Trash can location cannot be detected ."

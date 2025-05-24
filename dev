@@ -3,11 +3,8 @@ function prepare_can
 {
   refresh="$1"
   can="${HOME}/test-poi-can"
-  if [ ! -d ${can} ]; then
-    mkdir "${can}"
-  elif [ "${refresh}" == "y" ]; then
-    /bin/rm -rf "${can}/*"
-  fi
+  [[ -d ${can} ]] && [[ "${refresh}" == 'y' ]] && /bin/rm -rf "${can}"
+  [[ ! -d ${can} ]] && mkdir "${can}"
   echo "${can}"
 }
 
@@ -15,7 +12,8 @@ function gendata
 {
   refresh="$1"
   can="$(prepare_can ${refresh})"
-  POI_TRASH_CAN_PATH="${can}" cabal run gendata
+  datasize="$2"
+  POI_TRASH_CAN_PATH="${can}" POI_GENDATA_SIZE="${datasize}" cabal run gendata
 }
 
 cmd="${1}"
@@ -36,7 +34,7 @@ case "${cmd}" in
     ;;
   versioning|v) sh scripts/versioning;;
   release) sh scripts/release;;
-  gendata) gendata;;
-  gendata-x) gendata 'y';;
+  gendata) gendata ${POI_GENDATA_SIZE:-};;
+  gendata-x) gendata 'y' ${POI_GENDATA_SIZE:-};;
   *) eval "${cmd} $@";;
 esac
