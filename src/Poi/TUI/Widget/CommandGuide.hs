@@ -33,7 +33,8 @@ render =
       hBox
         [ guide "ctrl-x" "Delete"
         , succGuide "ctrl-r" "Rollback"
-        , succGuide "ctrl-f" "Forward a page"
-        , succGuide "ctrl-b" "Backward a page"
+        , succGuide "ctrl-f" "Page up"
+        , succGuide "ctrl-b" "Page down"
         , succGuide "tab" "Mark"
+        , succGuide "ctrl-c" "Exit"
         ]
