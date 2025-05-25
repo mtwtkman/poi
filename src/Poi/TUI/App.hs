@@ -5,10 +5,7 @@ import qualified Brick.AttrMap as A
 import qualified Brick.Main as M
 import Brick.Types (Widget)
 import qualified Brick.Types as T
-import Brick.Widgets.Core (
-  vBox,
-  vLimit, emptyWidget,
- )
+import Brick.Widgets.Core (vBox)
 import qualified Brick.Widgets.List as L
 import Control.Monad (void)
 import qualified Graphics.Vty as V
@@ -28,14 +25,11 @@ isDebug Release = False
 drawUI :: Mode -> State -> [Widget Name]
 drawUI mode st = [ui]
  where
-  trashList = TrashList.render st
-  filterInput = FilterInput.render st
   ui =
       vBox
-        ( [ filterInput
-          , trashList
+        ( [ FilterInput.render st
+          , TrashList.render st
           , CommandGuide.render
-          , vLimit 2 emptyWidget
           ]
             <> ([DebugWindow.render st | isDebug mode])
         )
