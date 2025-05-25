@@ -75,8 +75,10 @@ updateMark i t = do
 handleEvent :: BrickEvent n e -> EventM Name State ()
 handleEvent (VtyEvent e) = do
   case e of
-    V.EvKey (V.KChar 'x') [V.MCtrl] -> buryTrash
+    V.EvKey (V.KChar 'n') [V.MCtrl] -> zoom trashList $ modify L.listMoveDown
+    V.EvKey (V.KChar 'p') [V.MCtrl] -> zoom trashList $ modify L.listMoveUp
     V.EvKey (V.KChar 'r') [V.MCtrl] -> pickUpTrash
+    V.EvKey (V.KChar 'x') [V.MCtrl] -> buryTrash
     V.EvKey (V.KChar '\t') [] -> do
       l <- use trashList
       case L.listSelectedElement l of

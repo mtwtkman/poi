@@ -43,8 +43,10 @@ appEvent ev@(T.VtyEvent e) =
     V.EvKey V.KDown [] -> handleTrashList
     V.EvKey (V.KChar 'b') [V.MCtrl] -> handleTrashList
     V.EvKey (V.KChar 'f') [V.MCtrl] -> handleTrashList
-    V.EvKey (V.KChar 'x') [V.MCtrl] -> handleTrashList
+    V.EvKey (V.KChar 'n') [V.MCtrl] -> handleTrashList
+    V.EvKey (V.KChar 'p') [V.MCtrl] -> handleTrashList
     V.EvKey (V.KChar 'r') [V.MCtrl] -> handleTrashList
+    V.EvKey (V.KChar 'x') [V.MCtrl] -> handleTrashList
     V.EvKey (V.KChar '\t') [] -> handleTrashList
     _ -> FilterInput.handleEvent ev
  where
