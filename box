@@ -120,6 +120,7 @@ case "${cmd}" in
     initialize_box $@
     ;;
   bashrc|b) generate_bashrc;;
+  replace|r) distrobox assemble create --replace --file distrobox.ini;;
   stop|s)
     [ "${CONTAINER_ID}" ] && exit 0
     [ ! "$(distrobox list | rg poi-dev)" ] && exit 0
