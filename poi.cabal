@@ -35,11 +35,11 @@ executable gendata
   main-is: Main.hs
   build-depends:
     base,
+    directory,
+    filepath,
     poi,
     random,
     time,
-    directory,
-    filepath,
 
   ghc-options: -threaded
   hs-source-dirs: gendata
