@@ -56,6 +56,9 @@ alias la="ls -A"
 alias ll="ls -alF"
 alias vim="nvim"
 alias update="sudo pacman --noconfirm -Syu && sudo pacman -Qqdt | sudo pacman -Rus 2>/dev/null"
+alias xdg-open="distrobox-host-exec wslview"
+
+PATH="${HOME}/.local/bin:${PATH}"
 
 source /usr/share/bash-completion//bash_completion
 source /usr/share/bash-completion/completions/git
@@ -90,6 +93,11 @@ source ~/.ghcup/env
 EOF
 }
 
+function generate_local_bin
+{
+  echo "distrobox-host-exec wslview $@" > $HOME/.local/bin/xdg-open
+}
+
 function initialize_box
 {
   [ "$#" = 1 ] && [ "$1" = "-f" ] && unset BOX_INITIALIZED
@@ -100,6 +108,8 @@ function initialize_box
   create_symlink ${DISTROBOX_HOST_HOME}/.config/nvim "${XDG_CONFIG_HOME}/nvim"
   create_symlink ${DISTROBOX_HOST_HOME}/.config/git "${XDG_CONFIG_HOME}/git"
   create_symlink ${DISTROBOX_HOST_HOME}/.config/bat "${XDG_CONFIG_HOME}/bat"
+
+  generate_local_bin
 
   generate_bashrc
 
@@ -119,7 +129,10 @@ case "${cmd}" in
     [ ! "${CONTAINER_ID}" ] && exit 0
     initialize_box $@
     ;;
-  bashrc|b) generate_bashrc;;
+  setup)
+    generate_local_bin
+    generate_bashrc
+    ;;
   replace|r) distrobox assemble create --replace --file distrobox.ini;;
   stop|s)
     [ "${CONTAINER_ID}" ] && exit 0
