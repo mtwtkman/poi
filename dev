@@ -34,7 +34,8 @@ case "${cmd}" in
     ;;
   versioning|v) sh scripts/versioning;;
   release) sh scripts/release;;
-  gendata) gendata ${POI_GENDATA_SIZE:-};;
-  gendata-x) gendata 'y' ${POI_GENDATA_SIZE:-};;
+  data:gen|g) gendata ${POI_GENDATA_SIZE:-};;
+  data:genx|gx) gendata 'y' ${POI_GENDATA_SIZE:-};;
+  data:cleanup|c) prepare_can 'y';;
   *) eval "${cmd} $@";;
 esac
