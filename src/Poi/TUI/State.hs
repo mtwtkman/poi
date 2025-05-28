@@ -88,5 +88,5 @@ initialState = do
         Left e -> error $ show e
     Left e -> error $ show e
  where
-  initialCurrentTrashes trashes = L.list PoiTrashList (V.fromList (Li.map (\t -> ListItem t False True) trashes)) 10
+  initialCurrentTrashes trashes = L.list PoiTrashList (V.fromList (Li.map (\t -> ListItem t False True) trashes)) 0
   initialFilterCriteia = E.editorText FilterPatternInput Nothing ""
