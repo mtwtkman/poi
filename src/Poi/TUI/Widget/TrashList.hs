@@ -77,6 +77,8 @@ handleEvent (VtyEvent e) = do
   case e of
     V.EvKey (V.KChar 'n') [V.MCtrl] -> zoom trashList $ modify L.listMoveDown
     V.EvKey (V.KChar 'p') [V.MCtrl] -> zoom trashList $ modify L.listMoveUp
+    V.EvKey (V.KChar 'f') [V.MCtrl] -> zoom trashList L.listMovePageDown
+    V.EvKey (V.KChar 'b') [V.MCtrl] -> zoom trashList L.listMovePageUp
     V.EvKey (V.KChar 'r') [V.MCtrl] -> pickUpTrash
     V.EvKey (V.KChar 'x') [V.MCtrl] -> buryTrash
     V.EvKey (V.KChar '\t') [] -> do
