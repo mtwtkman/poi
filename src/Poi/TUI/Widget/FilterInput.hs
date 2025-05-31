@@ -38,7 +38,7 @@ handleEvent e = do
       newPos = case sel of
         Nothing -> Just 0
         Just (current, x) ->
-          let targets = Vec.filter (\(ListItem _ _ matched) -> matched) ts
+          let targets = Vec.filter (\(ListItem _ _ matched _) -> matched) ts
            in Vec.elemIndex x targets <|> Just current
   zoom trashList $ modify $ L.listReplace newL newPos
 
@@ -49,7 +49,7 @@ filterTrashesByPath p = go p Vec.empty
   go ptn acc xs
     | Vec.null xs = acc
     | otherwise =
-        let x@(ListItem (Trash name root _ _) _ matched) = Vec.head xs
+        let x@(ListItem (Trash name root _ _) _ matched _) = Vec.head xs
             rest = Vec.tail xs
          in Vec.concat
               [ Vec.singleton $

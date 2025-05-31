@@ -40,9 +40,9 @@ trashedItemList i sel t =
    in makeRow selStr (i + 1) t
 
 makeRow :: (String -> Widget Name) -> Int -> ListItem -> Widget Name
-makeRow s i (ListItem (Trash name root _ trashedAt) marked True) =
+makeRow s i (ListItem (Trash name root _ trashedAt) marked True _) =
   s $ (if marked then "*" else " ") <> " " <> show i <> ". " <> formatTime defaultTimeLocale "%Y-%m-%dT%H:%M:%S" trashedAt <> ": " <> joinPath [root, name]
-makeRow _ _ (ListItem _ _ False) =
+makeRow _ _ (ListItem _ _ False _) =
   emptyWidget
 
 buryTrash :: EventM Name State ()
@@ -55,7 +55,7 @@ buryTrash = do
       Left err -> return ()
  where
   indicies :: Vec.Vector ListItem -> [Int]
-  indicies xs = Vec.toList $ Vec.map fst (Vec.filter (\(_, ListItem _ m _) -> m) $ Vec.zip (Vec.fromList [1 ..]) xs)
+  indicies xs = Vec.toList $ Vec.map fst (Vec.filter (\(_, ListItem _ m _ _) -> m) $ Vec.zip (Vec.fromList [1 ..]) xs)
 
 pickUpTrash :: EventM Name State ()
 pickUpTrash = undefined
