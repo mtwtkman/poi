@@ -23,7 +23,6 @@ import qualified Brick.Widgets.Edit as E
 import qualified Brick.Widgets.List as L
 import qualified Data.Text as T
 import qualified Data.Vector as V
-import Lens.Micro ((&), (.~), (^.))
 import Lens.Micro.TH (makeLenses)
 import Poi.Action.ListUp (listUp)
 import Poi.Entity (
@@ -84,19 +83,8 @@ initialState = do
   buildItemList :: [Trash] -> V.Vector ListItem
   buildItemList ts = V.fromList [ListItem t False | t <- ts]
 
-updateListItem :: State -> ListItem -> State
-updateListItem st x = updateVisibleListItem (updateOriginalListItem st x) x
- where
-  update :: V.Vector ListItem -> ListItem -> V.Vector ListItem
-  update l new =
-    case V.findIndex (== new) l of
-      Just i -> l V.// [(i, new)]
-      Nothing -> l
-
-  updateOriginalListItem :: State -> ListItem -> State
-  updateOriginalListItem st x = st & trashList .~ update (st ^. trashList) x
-
-  updateVisibleListItem :: State -> ListItem -> State
-  updateVisibleListItem st x =
-    let vl = st ^. visibleTrashList
-     in st & visibleTrashList .~ L.listReplace (update (L.listElements vl) x) (L.listSelected vl) vl
+updateListItem :: V.Vector ListItem -> ListItem -> V.Vector ListItem
+updateListItem l new =
+  case V.findIndex (== new) l of
+    Just i -> l V.// [(i, new)]
+    Nothing -> l

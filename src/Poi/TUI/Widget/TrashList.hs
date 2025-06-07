@@ -16,11 +16,11 @@ import qualified Data.Vector as Vec
 import Graphics.Vty (Attr, black, white)
 import qualified Graphics.Vty as V
 import Lens.Micro ((^.))
-import Lens.Micro.Mtl (use)
+import Lens.Micro.Mtl (use, (.=))
 import Poi.Action.Bury (deleteTrashByIndices)
 import Poi.Entity (Trash (Trash), TrashCanLocation (TrashCanLocation))
 import Poi.TUI.Common (Name)
-import Poi.TUI.State (ListItem (ListItem), State, toggleMark, trashCanLocation, visibleTrashList, updateListItem)
+import Poi.TUI.State (ListItem (ListItem), State, toggleMark, trashCanLocation, trashList, updateListItem, visibleTrashList)
 import System.FilePath (joinPath)
 
 trashedItemListAttr :: AttrName
@@ -66,9 +66,11 @@ pickUpTrash = undefined
 
 updateMark :: Int -> ListItem -> EventM Name State ()
 updateMark i t = do
-  l <- use visibleTrashList
-  let newL = Vec.map (\x -> if t == x then toggleMark x else x) (L.listElements l)
-  zoom visibleTrashList $ modify $ L.listReplace newL (Just i)
+  ts <- use trashList
+  vs <- use visibleTrashList
+  let newT = toggleMark t
+  zoom visibleTrashList $ modify $ L.listReplace (updateListItem (L.listElements vs) newT) (Just i)
+  trashList .= updateListItem ts newT
 
 handleEvent :: BrickEvent n e -> EventM Name State ()
 handleEvent (VtyEvent e) = do
