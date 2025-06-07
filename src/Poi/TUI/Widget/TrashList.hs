@@ -4,7 +4,7 @@ module Poi.TUI.Widget.TrashList (
   style,
 ) where
 
-import Brick (emptyWidget, on)
+import Brick (on)
 import Brick.AttrMap (AttrName, attrName)
 import Brick.Types (BrickEvent (VtyEvent), EventM, Widget, get, modify, zoom)
 import qualified Brick.Widgets.Border as B
@@ -20,7 +20,7 @@ import Lens.Micro.Mtl (use)
 import Poi.Action.Bury (deleteTrashByIndices)
 import Poi.Entity (Trash (Trash), TrashCanLocation (TrashCanLocation))
 import Poi.TUI.Common (Name)
-import Poi.TUI.State (ListItem (ListItem), State, toggleMark, trashCanLocation, trashList)
+import Poi.TUI.State (ListItem (ListItem), State, toggleMark, trashCanLocation, visibleTrashList, updateListItem)
 import System.FilePath (joinPath)
 
 trashedItemListAttr :: AttrName
@@ -40,22 +40,20 @@ trashedItemList i sel t =
    in makeRow selStr (i + 1) t
 
 makeRow :: (String -> Widget Name) -> Int -> ListItem -> Widget Name
-makeRow s i (ListItem (Trash name root _ trashedAt) marked True _) =
+makeRow s i (ListItem (Trash name root _ trashedAt) marked) =
   s $ (if marked then "*" else " ") <> " " <> show i <> ". " <> formatTime defaultTimeLocale "%Y-%m-%dT%H:%M:%S" trashedAt <> ": " <> joinPath [root, name]
-makeRow _ _ (ListItem _ _ False _) =
-  emptyWidget
 
 buryTrash :: EventM Name State ()
 buryTrash = do
   st <- get
   liftIO $ do
-    res <- deleteTrashByIndices (st ^. trashCanLocation) (indicies $ L.listElements (st ^. trashList))
+    res <- deleteTrashByIndices (st ^. trashCanLocation) (indicies $ L.listElements (st ^. visibleTrashList))
     case res of
       Right done -> return ()
       Left err -> return ()
  where
   indicies :: Vec.Vector ListItem -> [Int]
-  indicies xs = Vec.toList $ Vec.map fst (Vec.filter (\(_, ListItem _ m _ _) -> m) $ Vec.zip (Vec.fromList [1 ..]) xs)
+  indicies xs = Vec.toList $ Vec.map fst (Vec.filter (\(_, ListItem _ m) -> m) $ Vec.zip (Vec.fromList [1 ..]) xs)
 
 pickUpTrash :: EventM Name State ()
 pickUpTrash = undefined
@@ -68,32 +66,32 @@ pickUpTrash = undefined
 
 updateMark :: Int -> ListItem -> EventM Name State ()
 updateMark i t = do
-  l <- use trashList
+  l <- use visibleTrashList
   let newL = Vec.map (\x -> if t == x then toggleMark x else x) (L.listElements l)
-  zoom trashList $ modify $ L.listReplace newL (Just i)
+  zoom visibleTrashList $ modify $ L.listReplace newL (Just i)
 
 handleEvent :: BrickEvent n e -> EventM Name State ()
 handleEvent (VtyEvent e) = do
   case e of
-    V.EvKey (V.KChar 'n') [V.MCtrl] -> zoom trashList $ modify L.listMoveDown
-    V.EvKey (V.KChar 'p') [V.MCtrl] -> zoom trashList $ modify L.listMoveUp
-    V.EvKey (V.KChar 'f') [V.MCtrl] -> zoom trashList L.listMovePageDown
-    V.EvKey (V.KChar 'b') [V.MCtrl] -> zoom trashList L.listMovePageUp
+    V.EvKey (V.KChar 'n') [V.MCtrl] -> zoom visibleTrashList $ modify L.listMoveDown
+    V.EvKey (V.KChar 'p') [V.MCtrl] -> zoom visibleTrashList $ modify L.listMoveUp
+    V.EvKey (V.KChar 'f') [V.MCtrl] -> zoom visibleTrashList L.listMovePageDown
+    V.EvKey (V.KChar 'b') [V.MCtrl] -> zoom visibleTrashList L.listMovePageUp
     V.EvKey (V.KChar 'r') [V.MCtrl] -> pickUpTrash
     V.EvKey (V.KChar 'x') [V.MCtrl] -> buryTrash
     V.EvKey (V.KChar '\t') [] -> do
-      l <- use trashList
+      l <- use visibleTrashList
       case L.listSelectedElement l of
         Just (i, t) -> updateMark i t
         Nothing -> return ()
-    _ -> zoom trashList $ L.handleListEvent e
+    _ -> zoom visibleTrashList $ L.handleListEvent e
 handleEvent _ = return ()
 
 render :: State -> Widget Name
 render st =
   let
     TrashCanLocation can = st ^. trashCanLocation
-    ts = st ^. trashList
+    ts = st ^. visibleTrashList
    in
     B.borderWithLabel (str $ "Trash can path: " <> can) $
       if Vec.null (L.listElements ts)
