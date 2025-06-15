@@ -20,7 +20,15 @@ import Lens.Micro.Mtl (use, (.=))
 import Poi.Action.Bury (deleteTrashByIndices)
 import Poi.Entity (Trash (Trash), TrashCanLocation (TrashCanLocation))
 import Poi.TUI.Common (Name)
-import Poi.TUI.State (ListItem (ListItem), State, toggleMark, trashCanLocation, trashList, updateListItem, visibleTrashList)
+import Poi.TUI.State (
+  ListItem (ListItem),
+  State,
+  toggleMark,
+  trashCanLocation,
+  trashList,
+  updateListItem,
+  visibleTrashList,
+ )
 import System.FilePath (joinPath)
 
 trashedItemListAttr :: AttrName
