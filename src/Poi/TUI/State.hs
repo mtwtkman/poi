@@ -8,6 +8,8 @@ module Poi.TUI.State (
   visibleTrashList,
   trashList,
   trashCanLocation,
+  dialogState,
+  DialogState(..),
   filterCriteria,
   filterInputFocus,
   ListItem (..),
@@ -15,10 +17,12 @@ module Poi.TUI.State (
   unmark,
   toggleMark,
   updateListItem,
+  Answer (..),
 )
 where
 
 import qualified Brick.Focus as F
+import qualified Brick.Widgets.Dialog as D
 import qualified Brick.Widgets.Edit as E
 import qualified Brick.Widgets.List as L
 import qualified Data.Text as T
@@ -51,9 +55,20 @@ toggleMark :: ListItem -> ListItem
 toggleMark
   (ListItem t m) = ListItem t (not m)
 
+data Answer = OK | Cancel
+  deriving (Show)
+
+data DialogState = DialogState
+  { _dialogWidget :: D.Dialog Answer Name
+  , _dialogMessage :: String
+  }
+
+makeLenses ''DialogState
+
 data State = State
   { _visibleTrashList :: L.List Name ListItem
   , _trashList :: V.Vector ListItem
+  , _dialogState :: Maybe DialogState
   , _filterCriteria :: E.Editor T.Text Name
   , _filterInputFocus :: F.FocusRing Name
   , _trashCanLocation :: TrashCanLocation
@@ -74,6 +89,7 @@ initialState = do
                 State
                   (L.list PoiTrashList l 0)
                   l
+                  Nothing
                   (E.editorText FilterPatternInput Nothing "")
                   (F.focusRing [FilterPatternInput])
                   can

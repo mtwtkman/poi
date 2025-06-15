@@ -6,7 +6,7 @@ module Poi.TUI.Widget.TrashList (
 
 import Brick (on)
 import Brick.AttrMap (AttrName, attrName)
-import Brick.Types (BrickEvent (VtyEvent), EventM, Widget, get, modify, zoom)
+import Brick.Types (BrickEvent (VtyEvent), EventM, Widget, get, modify, put, zoom)
 import qualified Brick.Widgets.Border as B
 import Brick.Widgets.Core (Padding (Max), padBottom, padRight, str, withAttr)
 import qualified Brick.Widgets.List as L
@@ -22,13 +22,14 @@ import Poi.Entity (Trash (Trash), TrashCanLocation (TrashCanLocation))
 import Poi.TUI.Common (Name)
 import Poi.TUI.State (
   ListItem (ListItem),
-  State,
+  State (_dialogState),
   toggleMark,
   trashCanLocation,
   trashList,
   updateListItem,
   visibleTrashList,
  )
+import qualified Poi.TUI.Widget.Dialog as Dialog
 import System.FilePath (joinPath)
 
 trashedItemListAttr :: AttrName
@@ -63,8 +64,11 @@ buryTrash = do
   indicies :: Vec.Vector ListItem -> [Int]
   indicies xs = Vec.toList $ Vec.map fst (Vec.filter (\(_, ListItem _ m) -> m) $ Vec.zip (Vec.fromList [1 ..]) xs)
 
+confirm :: String -> State -> State
+confirm msg st = st{_dialogState = Just (Dialog.confirmation Nothing msg)}
+
 pickUpTrash :: EventM Name State ()
-pickUpTrash = undefined
+pickUpTrash = get >>= put . confirm "pickup"
  where
   pickUpSelected :: EventM Name State ()
   pickUpSelected = undefined

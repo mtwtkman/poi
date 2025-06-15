@@ -6,6 +6,7 @@ data Name
   = PoiTrashList
   | FilterPatternInput
   | CommandGuide
+  | ConfirmationDialog
   deriving (Eq, Ord, Show)
 
 data TuiResult a b = PoiActionResult (PoiActionResult a) | BrickEventResult b

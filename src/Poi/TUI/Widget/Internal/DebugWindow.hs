@@ -31,4 +31,5 @@ render st =
               vBox
                 [ txt (T.pack "filter criteria: " <> criteria)
                 , str ("filter criteria length: " <> show (T.length criteria))
+                , str "dialog state:"
                 ]

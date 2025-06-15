@@ -94,6 +94,7 @@ library
     Poi.TUI.State
     Poi.TUI.Widget.CommandGuide
     Poi.TUI.Widget.Confirm
+    Poi.TUI.Widget.Dialog
     Poi.TUI.Widget.FilterInput
     Poi.TUI.Widget.Internal.DebugWindow
     Poi.TUI.Widget.MessageBox

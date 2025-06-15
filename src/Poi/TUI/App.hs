@@ -13,8 +13,11 @@ import qualified Poi.TUI.Widget.CommandGuide as CommandGuide
 import Poi.TUI.Common (Name)
 import qualified Poi.TUI.Widget.Internal.DebugWindow as DebugWindow
 import qualified Poi.TUI.Widget.FilterInput as FilterInput
-import Poi.TUI.State (State, initialState)
+import Poi.TUI.State (State, initialState, dialogState)
 import qualified Poi.TUI.Widget.TrashList as TrashList
+import Lens.Micro ((^.))
+import Data.Maybe (catMaybes)
+import qualified Poi.TUI.Widget.Dialog as Dialog
 
 data Mode = Debug | Release
 
@@ -23,9 +26,9 @@ isDebug Debug = True
 isDebug Release = False
 
 drawUI :: Mode -> State -> [Widget Name]
-drawUI mode st = [ui]
+drawUI mode st = catMaybes [Dialog.render <$> (st ^. dialogState), Just root]
  where
-  ui =
+  root =
       vBox
         ( [ FilterInput.render st
           , TrashList.render st
