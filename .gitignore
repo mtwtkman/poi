@@ -3,3 +3,5 @@ dist-newstyle
 test-poi-*
 dest/
 .distrobox/
+distrobox.ini
+box
